@@ -1,6 +1,7 @@
 // pin mode constants
 const OUTPUT = 0
 const INPUT = 1
+const INPUT_PULLUP = 2
 
 // volt level constants
 const HIGH = 1
@@ -28,12 +29,12 @@ const UNO = class {
                     // opening port
                     port.open({ baudRate : 2000000 }).then(() => {
                         // get reader and writer
-                        send.reader = port.readable.getReader()
-                        send.writer = port.writable.getWriter()
+                        this.send.reader = port.readable.getReader()
+                        this.send.writer = port.writable.getWriter()
                         // success request delay 
                         setTimeout(() => {
                             // request client version
-                            getVersion().then(ver => {
+                            this.init.getVersion().then(ver => {
                                 if(versions.includes(ver)) {
                                     // set running flag
                                     running = true
@@ -59,21 +60,22 @@ const UNO = class {
         // first state flag
         let first = true
 
-        const types = [ 201, 202, 203, 204, 205, 206, 207, 208, 209, 210 ]
+        const types = [ 201, 202, 203 ]
 
-        const send = async function(type, resolve, reject, data = []) {
+        this.send = async function(type, method, resolve, reject, data = []) {
             // return if busy
             if(busy) { return reject() }
             // set busy flag
             busy = true
             // create array for buffer
-            const array = [type].concat(data)
+            const array = [type, method].concat(data)
             // push end character
             array.push(255)
             // send message as buffer
             send.writer.write(new Uint8Array(array)).then(() => {
                 // bytes remainder
                 let remainder = []
+                window.remainder = remainder
                 // read loop until end character
                 const readLoop = () => {
                     // read message
@@ -128,8 +130,12 @@ const UNO = class {
             }).catch(reject)
         }
 
+        const send = this.send
+
         const sendResolve = (data, resolve) => {
-            // remove message type
+            // remove category code
+            data.shift()
+            // remove method code
             data.shift()
             // get digital states
             const digital = data.splice(0, data.indexOf(254) + 1)
@@ -139,14 +145,16 @@ const UNO = class {
             states.digital = digital.splice(0, digital.length - 1)
             // update analog pins
             states.analog = analog.splice(0, analog.length - 1)
+            // remove end character
+            if(data[data.length - 1] === 255) { data.pop() }
             // callback resolve after updaing pin states
             resolve(data)
         }
 
         // get version method
-        const getVersion = async function() {
+        this.init.getVersion = async function() {
             return new Promise((resolve, reject) => {
-                send(201, arr => {
+                send(201, 0, arr => {
                     resolve(arr.splice(0, 3).join('.'))
                 }, reject)
             })
@@ -156,7 +164,7 @@ const UNO = class {
         this.update = async function() {
             // return promise
             return new Promise((resolve, reject) => {
-                send(203, resolve, reject, [])
+                send(201, 2, resolve, reject, [])
             })
         }
 
@@ -171,37 +179,44 @@ const UNO = class {
         }
 
         // pin format converter
-        const convertPinFormat = (args, par_1, par_2) => {
+        const convertPinFormat = (args, pars) => {
             // data object
             let data = typeof args[0] === 'object' ? args[0] : {}
             // check input mode
             if(args.length === 1) {
                 // object mode
-                if(data[par_1] === undefined) { data[par_1] = [] }
-                if(data[par_2] === undefined) { data[par_2] = [] }
+                pars.forEach(par => {
+                    if(data[par] === undefined) { data[par] = [] }
+                })
             } else {
                 // single mode
-                if(args[1] === 1) {
-                    data[par_1] = [ args[0] ]
-                    data[par_2] = []
-                } else {
-                    data[par_2] = [ args[0] ]
-                    data[par_1] = []
-                }
+                pars.forEach((par, idx) => {
+                    if(args[1] === idx) {
+                        data[par] = [ args[0] ]
+                    } else {
+                        data[par] = []
+                    }
+                })
             }
             // output array
             const out = []
+            const irr = []
             // push other pins
             for(let i = 0; i < states.digital.length; i++) {
-                if(data[par_1].includes(i)) {
-                    // set as input, high pin
-                    out.push(1)
-                } else if(data[par_2].includes(i)) {
-                    // set as output, low pin
-                    out.push(0)
-                } else {
-                    // no change to pin
-                    out.push(253)
+                if(irr.includes(i) === false) {
+                    pars.forEach((par, idx) => {
+                            if(data[par].includes(i)) {
+                                // set as input, output, input, input_pullup
+                                out.push(idx)
+                                irr.push(i)
+                            }
+                    })
+
+                    if(irr.includes(i) === false) {
+                        // no change to pin
+                        out.push(253)
+                        irr.push(i)
+                    }
                 }
             }
             // return output
@@ -237,20 +252,20 @@ const UNO = class {
         // set pin mode method
         this.pinMode = async function() {
             // get pin format
-            const data = convertPinFormat(arguments, 'INPUT', 'OUTPUT')
+            const data = convertPinFormat(arguments, ['OUTPUT', 'INPUT', 'INPUT_PULLUP'])
             // return promise
             return new Promise((resolve, reject) => {
-                send(202, resolve, reject, data)
+                send(201, 1, resolve, reject, data)
             })
         }
 
         // digital write method
         this.digitalWrite = async function() {
             // get pin format
-            const data = convertPinFormat(arguments, 'HIGH', 'LOW')
+            const data = convertPinFormat(arguments, ['LOW', 'HIGH'])
             // return promise
             return new Promise((resolve, reject) => {
-                send(204, resolve, reject, data)
+                send(201, 3, resolve, reject, data)
             })
         }
 
@@ -260,7 +275,7 @@ const UNO = class {
             const data = convertPinFormatAnalog(arguments)
             // return promise
             return new Promise((resolve, reject) => {
-                send(205, resolve, reject, data)
+                send(201, 4, resolve, reject, data)
             })
         }
 
@@ -273,7 +288,7 @@ const UNO = class {
             const data = Array.from(encoder.encode(milliseconds))
             // return promise
             return new Promise((resolve, reject) => {
-                send(206, resolve, reject, data)
+                send(201, 5, resolve, reject, data)
             })
         }
 
@@ -283,7 +298,7 @@ const UNO = class {
             const data = Array.from(encoder.encode(microseconds))
             // return promise
             return new Promise((resolve, reject) => {
-                send(207, resolve, reject, data)
+                send(201, 6, resolve, reject, data)
             })
         }
 
@@ -291,9 +306,7 @@ const UNO = class {
         this.millis = async function() {
             // return promise
             return new Promise((resolve, reject) => {
-                send(208, arr => {
-                    // remove last char
-                    arr.pop()
+                send(201, 7, arr => {
                     // decode and resolve
                     resolve(parseInt(decoder.decode(new Uint8Array(arr))))
                 }, reject, [])
@@ -304,25 +317,10 @@ const UNO = class {
         this.micros = async function() {
             // return promise
             return new Promise((resolve, reject) => {
-                send(209, arr => {
-                    // remove last char
-                    arr.pop()
+                send(201, 8, arr => {
                     // decode and resolve
                     resolve(parseInt(decoder.decode(new Uint8Array(arr))))
                 }, reject, [])
-            })
-        }
-
-        // pulse in method
-        this.pulseIn = async function(pin, value) {
-            // return promise
-            return new Promise((resolve, reject) => {
-                send(210, arr => {
-                    // remove last char
-                    arr.pop()
-                    console.log(arr)
-                    resolve(parseInt(decoder.decode(new Uint8Array(arr))))
-                }, reject, [pin, value])
             })
         }
 
