@@ -85,6 +85,8 @@ void loop() {
     } else if(bytes[1] == PIN_STAT) {
       Serial.write(PIN_STAT);
       sendPinStates();
+      Serial.write(SPR);
+      sendJSVersion();
     } else if(bytes[1] == PIN_MODE) {
       Serial.write(PIN_MODE);
       setPinModes();

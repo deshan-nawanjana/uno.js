@@ -110,10 +110,14 @@ const UNO = class {
                         if(arr.includes(255)) {
                             // splice from end
                             arr.splice(0, arr.lastIndexOf(255) + 1)
-                        } else if(arr.length > 1) {
+                        } else if(arr.length > 1 && arr.indexOf(201) == -1) {
                             // clear all due to garbage
                             arr = []
                         }
+                    }
+                    // clear front garbage
+                    if(types.includes(arr[0]) === false && arr.indexOf(201) > -1 && arr.indexOf(255) > -1) {
+                        arr = arr.splice(arr.indexOf(201))
                     }
                     // first call check
                     if(first === true && arr[0] !== 201 && arr[arr.length - 1] === 255) {
@@ -145,6 +149,8 @@ const UNO = class {
             states.digital = digital.splice(0, digital.length - 1)
             // update analog pins
             states.analog = analog.splice(0, analog.length - 1)
+            // update state ui utils
+            this.utils.filter(x => x.isStateUI).forEach(x => x.update(states))
             // remove end character
             if(data[data.length - 1] === 255) { data.pop() }
             // callback resolve after updaing pin states
@@ -323,6 +329,9 @@ const UNO = class {
                 }, reject, [])
             })
         }
+
+        // controller utils
+        this.utils = []
 
     }
 
