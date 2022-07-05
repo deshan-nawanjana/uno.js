@@ -1,10 +1,14 @@
 const uno = new UNO()
+// create liquid crystal display
+const lcd = new UNO.LiquidCrystalDisplay(uno)
 // create sensor with trigger pin and echo pin
-const uss = new UNO.UltrasonicSensor(uno, 12, 13)
+const uss = new UNO.UltrasonicSensor(uno, 4, 5)
 
 const init = async function() {
-    // start controller
+    // start uno.js
     await uno.init()
+    // start lcd
+    await lcd.begin(16, 2)
     // start sensor
     await uss.init()
     // start loop
@@ -16,8 +20,12 @@ const loop = async function() {
     const duration = await uss.read()
     // calculate distance
     const distance = (duration * 340 * 100 * 0.5) / 1000000
-    // print distance
-    console.log(distance)
+    // set cursor position
+    await lcd.setCursor(0, 0)
+    // print on lcd
+    await lcd.print(distance)
+    // delay 300 milliseconds
+    await uno.delay(300)
     // loop again
     loop()
 }
