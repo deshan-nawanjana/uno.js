@@ -1,35 +1,32 @@
-UNO.StateUI = class {
+UNO.VoltageMonitor = class {
 
     constructor(controller) {
 
-        let interval = 10
+        // update interval
+        let interval = 50
 
         // dom element
         this.element = document.createElement('div')
+
         // setup element
-        this.element.className = 'unojs-util unojs-util-state-ui'
+        this.element.className = 'unojs-util unojs-util-voltage-monitor'
+
         // inner elements
         this.element.innerHTML = `
             <div class="analog-panel-title">Analog Inputs</div>
             <div class="analog-panel">
                 <div class="analog-index"></div>
                 <div class="analog-values"></div>
-                <canvas class="analog-canvas" width="270" height="300"></canvas>
+                <canvas class="analog-canvas" width="270" height="0"></canvas>
             </div>
             <div class="digital-panel-title">Digital Pins</div>
             <div class="digital-panel">
                 <div class="digital-index"></div>
                 <div class="digital-values"></div>
-                <canvas class="digital-canvas" width="270" height="300"></canvas>
+                <canvas class="digital-canvas" width="270" height="0"></canvas>
             </div>
         `
 
-        const digitalIndex = this.element.querySelector('.digital-index')
-        const analogIndex = this.element.querySelector('.analog-index')
-
-        const digitalValues = this.element.querySelector('.digital-values')
-        const analogValues = this.element.querySelector('.analog-values')
-        
         const digitalCanvas = this.element.querySelector('.digital-canvas')
         const analogCanvas = this.element.querySelector('.analog-canvas')
 
@@ -38,20 +35,6 @@ UNO.StateUI = class {
 
         dContext.lineWidth = 0.8
         aContext.lineWidth = 0.8
-
-        const colors = [
-            'ff3300', '00cc99', '0066cc', '6666ff', 'ff66cc', 'ff9933',
-            'ff3300', '00cc99', '0066cc', '6666ff', 'ff66cc', 'ff9933',
-            'ff3300', '00cc99', '0066cc', '6666ff', 'ff66cc', 'ff9933',
-            'ff3300', '00cc99', '0066cc', '6666ff', 'ff66cc', 'ff9933',
-            'ff3300', '00cc99', '0066cc', '6666ff', 'ff66cc', 'ff9933',
-            'ff3300', '00cc99', '0066cc', '6666ff', 'ff66cc', 'ff9933',
-            'ff3300', '00cc99', '0066cc', '6666ff', 'ff66cc', 'ff9933',
-            'ff3300', '00cc99', '0066cc', '6666ff', 'ff66cc', 'ff9933',
-            'ff3300', '00cc99', '0066cc', '6666ff', 'ff66cc', 'ff9933',
-            'ff3300', '00cc99', '0066cc', '6666ff', 'ff66cc', 'ff9933',
-            'ff3300', '00cc99', '0066cc', '6666ff', 'ff66cc', 'ff9933'
-        ]
 
         let old = {}
 
@@ -83,10 +66,10 @@ UNO.StateUI = class {
                 // value element
                 const vElm = document.createElement('div')
                 vElm.className = 'value-label'
-                vElm.style.color =  '#' + colors[i]
+                vElm.style.color =  CLR(i)
                 vBox.appendChild(vElm)
                 // draw line
-                ctx.strokeStyle = '#' + colors[i]
+                ctx.strokeStyle = CLR(i)
                 ctx.lineWidth = 0.8
                 ctx.beginPath()
                 ctx.moveTo(0, i * 30 + 15)
@@ -100,6 +83,8 @@ UNO.StateUI = class {
             const vBox = this.element.querySelector('.' + name + '-values')
             const cnv = this.element.querySelector('.' + name + '-canvas')
             const ctx = cnv.getContext('2d')
+            // return if 0 height
+            if(cnv.height === 0) { return }
             // shift canvas graph
             ctx.globalCompositeOperation = "copy"
             ctx.drawImage(ctx.canvas, -20, 0)
@@ -112,7 +97,7 @@ UNO.StateUI = class {
                 const a = (old[name] ? old[name][i] : 0) / devider
                 const b = (array[i]) / devider
                 // draw line
-                ctx.strokeStyle = '#' + colors[i]
+                ctx.strokeStyle = CLR(i)
                 ctx.beginPath()
                 ctx.moveTo(250, i * 30 + 15 - a)
                 ctx.lineTo(270, i * 30 + 15 - b)
@@ -141,7 +126,7 @@ UNO.StateUI = class {
         }
 
         // start render
-        render(controller._state.pins)
+        render()
 
         this.setInterval = time => {
             interval = time

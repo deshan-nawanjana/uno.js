@@ -1,0 +1,64 @@
+.unojs-util-serial-monitor {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    background-color: #222;
+    position: fixed;
+    top: calc(100vh - 305px);
+    width: calc(100vw - 410px);
+    height: 285px;
+    left: 20px;
+    box-shadow: 0px 3px 15px rgba(0,0,0,0.1);
+    max-height: calc(100vh - 40px);
+    overflow-y: hidden;
+    overflow-x: hidden;
+    user-select: none;
+    outline: none;
+    cursor: default;
+    font-size: 10px;
+}
+
+.serial-monitor-title {
+    text-align: center;
+    height: 40px;
+    line-height: 40px;
+    color: #FFF6;
+    font-size: 12px;
+    background-color: #1118;
+    text-align: left;
+    padding: 0px 0px 0px 15px;
+}
+
+.serial-monitor-item {
+    height: 30px;
+    white-space: nowrap;
+    font-size: 10px;
+    color: #FFF6;
+    overflow: hidden;
+    padding: 0px 10px 0px 10px;
+}
+
+.serial-monitor-item > div {
+    width: 20px;
+    text-align: center;
+    line-height: 30px;
+    float: left;
+    display: inline-block;
+    font-size: 8px;
+}
+
+.serial-monitor-title > select {
+    float: right;
+    height: 40px;
+    border: none;
+    padding: 0px 10px 0px 0px;
+    margin: 0px 5px 0px 0px;
+    width: 140px;
+    text-align: right;
+    outline: none;
+    background-color: transparent;
+    color: #FFF6;
+}
+
+.serial-monitor-title > select > option {
+    background-color: #222;
+    color: #FFF6;
+}

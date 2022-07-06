@@ -1,26 +1,30 @@
-.unojs-util-state-ui {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+.unojs-util-voltage-monitor {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
     background-color: #222;
     position: fixed;
     top: 20px;
+    width: 350px;
     left: calc(100vw - 370px);
     box-shadow: 0px 3px 15px rgba(0,0,0,0.1);
     max-height: calc(100vh - 40px);
     overflow-y: auto;
     overflow-x: hidden;
+    user-select: none;
+    outline: none;
+    cursor: default;
 }
 
-.unojs-util-state-ui::-webkit-scrollbar {
+.unojs-util-voltage-monitor::-webkit-scrollbar {
     width: 3px;
     height: 3px;
 }
 
-.unojs-util-state-ui::-webkit-scrollbar-thumb {
+.unojs-util-voltage-monitor::-webkit-scrollbar-thumb {
     background-color: #FFF5;
 }
 
-.unojs-util-state-ui > .digital-panel,
-.unojs-util-state-ui > .analog-panel {
+.unojs-util-voltage-monitor > .digital-panel,
+.unojs-util-voltage-monitor > .analog-panel {
     display: flex;
 }
 
@@ -44,8 +48,10 @@
     line-height: 30px;
 }
 
-.digital-panel > .digital-index,
-.analog-panel > .analog-index {
+.analog-index > .value-index,
+.analog-values > .value-label,
+.digital-index > .value-index,
+.digital-values > .value-label {
     font-size: 10px;
     text-align: center;
     color: #FFF5;
@@ -54,12 +60,12 @@
     width: 40px;
 }
 
-.unojs-util-state-ui > .analog-panel-title, 
-.unojs-util-state-ui > .digital-panel-title {
+.unojs-util-voltage-monitor > .analog-panel-title, 
+.unojs-util-voltage-monitor > .digital-panel-title {
     text-align: center;
     height: 40px;
     line-height: 40px;
-    color: #FFF3;
+    color: #FFF6;
     font-size: 12px;
     background-color: #1118;
 }
