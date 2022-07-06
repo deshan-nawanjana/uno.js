@@ -1,4 +1,4 @@
-const uno = new UNO()
+const uno = new UNO.Controller()
 // create accelerometer
 const acc = new UNO.Accelerometer(uno)
 
@@ -20,4 +20,8 @@ const loop = async function() {
     loop()
 }
 
-document.querySelector('button').addEventListener('click', init)
+// create start button
+const btn = new UNO.StartButton(uno, init)
+
+// append start button to body
+document.body.append(btn.element)

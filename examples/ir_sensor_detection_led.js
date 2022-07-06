@@ -1,4 +1,4 @@
-const uno = new UNO()
+const uno = new UNO.Controller()
 
 const init = async function() {
     // start uno.js
@@ -11,7 +11,7 @@ const init = async function() {
 
 const loop = async function() {
     // check analog value from ir sensor
-    if(uno.analogRead(0) > 100) {
+    if(uno.analogRead(0) > 300) {
         // turn off led for no detection
         await uno.digitalWrite(5, LOW)
     } else {
@@ -24,4 +24,8 @@ const loop = async function() {
     loop()
 }
 
-document.querySelector('button').addEventListener('click', init)
+// create start button
+const btn = new UNO.StartButton(uno, init)
+
+// append start button to body
+document.body.append(btn.element)

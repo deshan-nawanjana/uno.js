@@ -1,4 +1,4 @@
-const uno = new UNO()
+const uno = new UNO.Controller()
 // create liquid crystal display
 const lcd = new UNO.LiquidCrystalDisplay(uno)
 // create sensor with trigger pin and echo pin
@@ -30,4 +30,8 @@ const loop = async function() {
     loop()
 }
 
-document.querySelector('button').addEventListener('click', init)
+// create start button
+const btn = new UNO.StartButton(uno, init)
+
+// append start button to body
+document.body.append(btn.element)
