@@ -42,15 +42,22 @@ const MTD = {
     }
 }
 
+// color code by index method
+const CLR = i => {
+    const colors = ['ff3300', '00cc99', '0066cc', '6666ff', 'ff66cc', 'ff9933']
+    return '#' + colors[i % colors.length]
+}
+
+const UNO = {}
+
 // main class
-const UNO = class {
-    
+UNO.Controller = class {
+
     constructor() {
 
         // port object
         let port = null
-        // running state flag
-        let running = false
+
         // supported versions
         const versions = ['1.0.22']
 
@@ -72,7 +79,8 @@ const UNO = class {
                             this.init.getVersion().then(ver => {
                                 if(versions.includes(ver)) {
                                     // set running flag
-                                    running = true
+                                    state.runs = true
+                                    begin = false
                                     // callback resolve
                                     resolve()
                                 } else {
@@ -86,18 +94,24 @@ const UNO = class {
             })
         }
 
-        // pin states
-        const states = { digital : [], analog : [] }
-
         // sender busy state
         let busy = false
-
-        // first state flag
-        let first = true
-
-        const types = [ 201, 202, 203 ]
+        // need to stop state
+        let needStop = false
+        let needStopResolve = null
 
         this.send = async function(type, method, resolve, reject, data = []) {
+            // check need stop
+            if(needStop) {
+                send.writer.releaseLock()
+                send.reader.releaseLock()
+                port.close()
+                begin = true
+                state.runs = false
+                needStop = false
+                needStopResolve()
+                return
+            }
             // return if busy
             if(busy) { return reject() }
             // set busy flag
@@ -108,6 +122,10 @@ const UNO = class {
             array.push(255)
             // send message as buffer
             send.writer.write(new Uint8Array(array)).then(() => {
+                // push to messages
+                state.msgs.sent.push(array)
+                // remove overflow messages
+                if(state.msgs.sent.length === 9) { state.msgs.sent.shift() }
                 // bytes remainder
                 let remainder = []
                 window.remainder = remainder
@@ -120,7 +138,7 @@ const UNO = class {
                         // combine with remainder
                         remainder = remainder.concat(arr)
                         // clear garbage in remainder
-                        remainder = readClear(remainder)
+                        remainder = clearRemainder(remainder)
                         // get end character index
                         const end = remainder.indexOf(255)
                         // callback for completed message
@@ -137,41 +155,42 @@ const UNO = class {
                         }
                     }).catch(reject)
                 }
-                // read clear method for garbage
-                const readClear = arr => {
-                    // no message type in front byte
-                    if(types.includes(arr[0]) === false) {
-                        // check for end character
-                        if(arr.includes(255)) {
-                            // splice from end
-                            arr.splice(0, arr.lastIndexOf(255) + 1)
-                        } else if(arr.length > 1 && arr.indexOf(201) == -1) {
-                            // clear all due to garbage
-                            arr = []
-                        }
-                    }
-                    // clear front garbage
-                    if(types.includes(arr[0]) === false && arr.indexOf(201) > -1 && arr.indexOf(255) > -1) {
-                        arr = arr.splice(arr.indexOf(201))
-                    }
-                    // first call check
-                    if(first === true && arr[0] !== 201 && arr[arr.length - 1] === 255) {
-                        // clear array
-                        arr = []
-                    }
-                    // update flag
-                    first = false
-                    // return remainder
-                    return arr
-                }
                 // start read loop
                 readLoop()
             }).catch(reject)
         }
 
-        const send = this.send
+        // message categories array
+        const starters = Object.values(CAT)
+        // begin state flag
+        let begin = true
+
+        const clearRemainder = arr => {
+            // begin check
+            if(begin) {
+                const idx = arr.lastIndexOf(201)
+                // version check result in middle
+                if(idx > -1 && arr[idx + 1] === 0) { return arr.splice(idx) }
+                // no version check result yet
+                if(idx === -1) { return [] }
+            }
+
+            // starter in first
+            if(starters.includes(arr[0])) { return arr }
+            // for each starters
+            for(let i = 0; i < starters; i++) {
+                const idx = arr.indexOf(starters[i])
+                if(idx > -1) { return arr.splice(idx) }
+            }
+            // return empty
+            return []
+        }
 
         const sendResolve = (data, resolve) => {
+            // push to messages
+            state.msgs.received.push(JSON.parse(JSON.stringify(data)))
+            // remove overflow messages
+            if(state.msgs.received.length === 9) { state.msgs.received.shift() }
             // remove category code
             data.shift()
             // remove method code
@@ -181,9 +200,9 @@ const UNO = class {
             // get analog states
             const analog = data.splice(0, data.indexOf(254) + 1).map(x => parseInt(x * 5.115))
             // update digital pins
-            states.digital = digital.splice(0, digital.length - 1)
+            state.pins.digital = digital.splice(0, digital.length - 1)
             // update analog pins
-            states.analog = analog.splice(0, analog.length - 1)
+            state.pins.analog = analog.splice(0, analog.length - 1)
             // remove end character
             if(data[data.length - 1] === 255) { data.pop() }
             // callback resolve after updaing pin states
@@ -209,12 +228,12 @@ const UNO = class {
 
         // digital read method
         this.digitalRead = pin => {
-            return states.digital[pin]
+            return state.pins.digital[pin]
         }
 
         // analog read method
         this.analogRead = pin => {
-            return states.analog[pin]
+            return state.pins.analog[pin]
         }
 
         // pin format converter
@@ -241,7 +260,7 @@ const UNO = class {
             const out = []
             const irr = []
             // push other pins
-            for(let i = 0; i < states.digital.length; i++) {
+            for(let i = 0; i < state.pins.digital.length; i++) {
                 if(irr.includes(i) === false) {
                     pars.forEach((par, idx) => {
                             if(data[par].includes(i)) {
@@ -275,7 +294,7 @@ const UNO = class {
             // get keys array
             const krr = Object.keys(data).map(x => parseInt(x))
             // push other pins
-            for(let i = 0; i < states.digital.length; i++) {
+            for(let i = 0; i < state.pins.digital.length; i++) {
                 if(krr.includes(i)) {
                     // analog value in range 0  to 255 => 0 to 200
                     out.push(parseInt((data[i] > 255 ? 255 : data[i]) / 1.275))
@@ -363,8 +382,32 @@ const UNO = class {
             })
         }
 
+        const send = this.send
+
         // controller state
-        this._state = { pins : states }
+        this._state = {
+            pins : { digital : [], analog : [] },
+            msgs : { sent : [], received : [] },
+            runs : false
+        }
+
+        // state class usage
+        const state = this._state
+
+        // disconnect callback
+        navigator.serial.addEventListener('disconnect', event => {
+            if(event.target === port) {
+                state.runs = false
+                begin = true
+            }
+        })
+
+        this.stop = async function() {
+            return new Promise(resolve => {
+                needStop = true
+                needStopResolve = resolve
+            })
+        }
 
     }
 
