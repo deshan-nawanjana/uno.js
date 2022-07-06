@@ -4,7 +4,7 @@ UNO.Accelerometer = class {
 
         this.powerOn = async function() {
             return new Promise((resolve, reject) => {
-                controller.send(203, 10, resolve, reject, [])
+                controller.send(CAT.CAT_MODS, MTD.CAT_MODS.ACL_POWR, resolve, reject, [])
             })
         }
 
@@ -12,7 +12,7 @@ UNO.Accelerometer = class {
 
         this.readAccel = async function() {
             return new Promise((resolve, reject) => {
-                controller.send(203, 11, arr => {
+                controller.send(CAT.CAT_MODS, MTD.CAT_MODS.ACL_READ, arr => {
                     // get x value
                     const x = parseInt(decoder.decode(new Uint8Array(arr.splice(0, arr.indexOf(254)))))
                     arr.shift()

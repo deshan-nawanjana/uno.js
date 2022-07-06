@@ -7,14 +7,14 @@ UNO.ServoMotor = class {
         // attach method
         this.attach = async function(pin) {
             return new Promise((resolve, reject) => {
-                controller.send(203, 0, resolve, reject, [pin || this.pin])
+                controller.send(CAT.CAT_MODS, MTD.CAT_MODS.SVR_ATCH, resolve, reject, [pin || this.pin])
             })
         }
 
         // write method
         this.write = async function(angle) {
             return new Promise((resolve, reject) => {
-                controller.send(203, 1, resolve, reject, [angle])
+                controller.send(CAT.CAT_MODS, MTD.CAT_MODS.SVR_WRTE, resolve, reject, [angle])
             })
         }
 

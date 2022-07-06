@@ -11,12 +11,12 @@ const init = async function() {
 
 const loop = async function() {
     // update uno
-    await uno.delay(100)
+    await uno.update()
     // loop again
     loop()
 }
 
 // append gui to body
-document.body.append(gui.domElement)
+document.body.append(gui.element)
 
 document.querySelector('button').addEventListener('click', init)

@@ -16,7 +16,7 @@ UNO.UltrasonicSensor = class {
         // read method
         this.read = async function() {
             return new Promise((resolve, reject) => {
-                controller.send(202, 0, arr => {
+                controller.send(CAT.CAT_SNSR, MTD.CAT_SNSR.USS_READ, arr => {
                     // decode and resolve
                     resolve(parseInt(decoder.decode(new Uint8Array(arr))))
                 }, reject, [triggerPin, echoPin])

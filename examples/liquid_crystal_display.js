@@ -1,6 +1,8 @@
 const uno = new UNO()
 // create liquid crystal display
 const lcd = new UNO.LiquidCrystalDisplay(uno)
+// create state ui
+const gui = new UNO.StateUI(uno)
 
 const init = async function() {
     // start uno.js
@@ -19,5 +21,8 @@ const loop = async function() {
     // loop again
     loop()
 }
+
+// append gui to body
+document.body.append(gui.element)
 
 document.querySelector('button').addEventListener('click', init)

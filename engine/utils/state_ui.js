@@ -2,32 +2,36 @@ UNO.StateUI = class {
 
     constructor(controller) {
 
-        this.isStateUI = true
-
-        // add to controller utiles
-        controller.utils.push(this)
+        let interval = 10
 
         // dom element
-        this.domElement = document.createElement('div')
+        this.element = document.createElement('div')
         // setup element
-        this.domElement.className = 'unojs-util unojs-util-state-ui'
+        this.element.className = 'unojs-util unojs-util-state-ui'
         // inner elements
-        this.domElement.innerHTML = `
+        this.element.innerHTML = `
+            <div class="analog-panel-title">Analog Inputs</div>
             <div class="analog-panel">
+                <div class="analog-index"></div>
                 <div class="analog-values"></div>
                 <canvas class="analog-canvas" width="270" height="300"></canvas>
             </div>
+            <div class="digital-panel-title">Digital Pins</div>
             <div class="digital-panel">
+                <div class="digital-index"></div>
                 <div class="digital-values"></div>
                 <canvas class="digital-canvas" width="270" height="300"></canvas>
             </div>
         `
 
-        const digitalValues = this.domElement.querySelector('.digital-values')
-        const analogValues = this.domElement.querySelector('.analog-values')
+        const digitalIndex = this.element.querySelector('.digital-index')
+        const analogIndex = this.element.querySelector('.analog-index')
+
+        const digitalValues = this.element.querySelector('.digital-values')
+        const analogValues = this.element.querySelector('.analog-values')
         
-        const digitalCanvas = this.domElement.querySelector('.digital-canvas')
-        const analogCanvas = this.domElement.querySelector('.analog-canvas')
+        const digitalCanvas = this.element.querySelector('.digital-canvas')
+        const analogCanvas = this.element.querySelector('.analog-canvas')
 
         const dContext = digitalCanvas.getContext('2d')
         const aContext = analogCanvas.getContext('2d')
@@ -38,128 +42,111 @@ UNO.StateUI = class {
         const colors = [
             'ff3300', '00cc99', '0066cc', '6666ff', 'ff66cc', 'ff9933',
             'ff3300', '00cc99', '0066cc', '6666ff', 'ff66cc', 'ff9933',
+            'ff3300', '00cc99', '0066cc', '6666ff', 'ff66cc', 'ff9933',
+            'ff3300', '00cc99', '0066cc', '6666ff', 'ff66cc', 'ff9933',
+            'ff3300', '00cc99', '0066cc', '6666ff', 'ff66cc', 'ff9933',
+            'ff3300', '00cc99', '0066cc', '6666ff', 'ff66cc', 'ff9933',
+            'ff3300', '00cc99', '0066cc', '6666ff', 'ff66cc', 'ff9933',
+            'ff3300', '00cc99', '0066cc', '6666ff', 'ff66cc', 'ff9933',
+            'ff3300', '00cc99', '0066cc', '6666ff', 'ff66cc', 'ff9933',
+            'ff3300', '00cc99', '0066cc', '6666ff', 'ff66cc', 'ff9933',
             'ff3300', '00cc99', '0066cc', '6666ff', 'ff66cc', 'ff9933'
         ]
 
         let old = {}
 
-        const checkPanelSize = obj => {
-            // digital values
-            if(digitalValues.children.length !== obj.digital.length) {
-                // clear element
-                digitalValues.innerHTML = ''
-                // for each value
-                for(let i = 0; i < obj.digital.length; i++) {
-                    // create new element
-                    const e = document.createElement('div')
-                    e.className = 'value-label'
-                    e.style.color =  '#' + colors[i]
-                    // append to panel
-                    digitalValues.appendChild(e)
-                }
-                // get diamensions
-                const w = 270
-                const h = obj.digital.length * 30
-                // set canvas height
-                digitalCanvas.setAttribute('height', h)
-                // clear react
-                dContext.clearRect(0, 0, w, h)
-                // for each value
-                for(let i = 0; i < obj.digital.length; i++) {
-                    // draw line
-                    dContext.strokeStyle = '#' + colors[i]
-                    dContext.lineWidth = 0.8
-                    dContext.beginPath()
-                    dContext.moveTo(0, i * 30 + 15)
-                    dContext.lineTo(w, i * 30 + 15)
-                    dContext.stroke()
-                }
+        const checkPanelSize = (name, array) => {
+            const vBox = this.element.querySelector('.' + name + '-values')
+            // check array length with children count
+            if(vBox.children.length === array.length) { return }
+            // define elements
+            const iBox = this.element.querySelector('.' + name + '-index')
+            const cnv = this.element.querySelector('.' + name + '-canvas')
+            const ctx = cnv.getContext('2d')
+            // get canvas diamensions
+            const w = 270
+            const h = array.length * 30
+            // set canvas height
+            cnv.setAttribute('height', h)
+            // clear canvas
+            ctx.clearRect(0, 0, w, h)
+            // clear elements
+            iBox.innerHTML = ''
+            vBox.innerHTML = ''
+            // for each value in array
+            for(let i = 0; i < array.length; i++) {
+                // index element
+                const iElm = document.createElement('div')
+                iElm.innerHTML = name[0].toUpperCase() + i
+                iElm.className = 'value-index'
+                iBox.appendChild(iElm)
+                // value element
+                const vElm = document.createElement('div')
+                vElm.className = 'value-label'
+                vElm.style.color =  '#' + colors[i]
+                vBox.appendChild(vElm)
+                // draw line
+                ctx.strokeStyle = '#' + colors[i]
+                ctx.lineWidth = 0.8
+                ctx.beginPath()
+                ctx.moveTo(0, i * 30 + 15)
+                ctx.lineTo(w, i * 30 + 15)
+                ctx.stroke()
             }
-            // analog values
-            if(analogValues.children.length !== obj.analog.length) {
-                // clear element
-                analogValues.innerHTML = ''
-                // for each value
-                for(let i = 0; i < obj.analog.length; i++) {
-                    // create new element
-                    const e = document.createElement('div')
-                    e.className = 'value-label'
-                    e.style.color =  '#' + colors[i]
-                    // append to panel
-                    analogValues.appendChild(e)
-                }
-                // get diamensions
-                const w = 270
-                const h = obj.analog.length * 30
-                // set canvas height
-                analogCanvas.setAttribute('height', h)
-                // clear react
-                aContext.clearRect(0, 0, w, h)
-                // for each value
-                for(let i = 0; i < obj.analog.length; i++) {
-                    // draw line
-                    aContext.strokeStyle = '#' + colors[i]
-                    aContext.beginPath()
-                    aContext.moveTo(0, i * 30 + 15)
-                    aContext.lineTo(w, i * 30 + 15)
-                    aContext.stroke()
-                }
+        }
+
+        const updateCanvas = (name, array, devider) => {
+            // get elements
+            const vBox = this.element.querySelector('.' + name + '-values')
+            const cnv = this.element.querySelector('.' + name + '-canvas')
+            const ctx = cnv.getContext('2d')
+            // shift canvas graph
+            ctx.globalCompositeOperation = "copy"
+            ctx.drawImage(ctx.canvas, -20, 0)
+            ctx.globalCompositeOperation = "source-over"
+            // for each value in array
+            for(let i = 0; i < array.length; i++) {
+                // set value label
+                vBox.children[i].innerHTML = array[i]
+                // draw value
+                const a = (old[name] ? old[name][i] : 0) / devider
+                const b = (array[i]) / devider
+                // draw line
+                ctx.strokeStyle = '#' + colors[i]
+                ctx.beginPath()
+                ctx.moveTo(250, i * 30 + 15 - a)
+                ctx.lineTo(270, i * 30 + 15 - b)
+                ctx.stroke()
             }
         }
 
         // update method
-        this.update = obj => {
-            // check panel size
-            checkPanelSize(obj)
-
-            // for each digital value
-            for(let i = 0; i < obj.digital.length; i++) {
-                digitalValues.children[i].innerHTML = obj.digital[i]
-            }
-
-            // translate canvas
-            dContext.globalCompositeOperation = "copy"
-            dContext.drawImage(dContext.canvas, -10, 0)
-            dContext.globalCompositeOperation = "source-over"
-
-            // draw values
-            for(let i = 0; i < obj.digital.length; i++) {
-                const a = (old.digital ? old.digital[i] : 0) * 15
-                const b = (obj.digital[i]) * 15
-                // draw line
-                dContext.strokeStyle = '#' + colors[i]
-                dContext.beginPath()
-                dContext.moveTo(260, i * 30 + 15 - a)
-                dContext.lineTo(270, i * 30 + 15 - b)
-                dContext.stroke()
-            }
-
-            // for each analog value
-            for(let i = 0; i < obj.analog.length; i++) {
-                analogValues.children[i].innerHTML = obj.analog[i]
-            }
-
-            // translate canvas
-            aContext.globalCompositeOperation = "copy"
-            aContext.drawImage(aContext.canvas, -10, 0)
-            aContext.globalCompositeOperation = "source-over"
-
-            // draw values
-            for(let i = 0; i < obj.analog.length; i++) {
-                const a = (old.analog ? old.analog[i] : 0) / 68.2
-                const b = (obj.analog[i]) / 68.2
-                // draw line
-                aContext.strokeStyle = '#' + colors[i]
-                aContext.beginPath()
-                aContext.moveTo(260, i * 30 + 15 - a)
-                aContext.lineTo(270, i * 30 + 15 - b)
-                aContext.stroke()
-            }
-
+        const update = obj => {
+            // check panel sizes
+            checkPanelSize('analog', obj.analog)
+            checkPanelSize('digital', obj.digital)
+            // update canvases
+            updateCanvas('analog', obj.analog, 68.2)
+            updateCanvas('digital', obj.digital, 0.06666)
             // store history
-            old = obj
-
+            old = JSON.parse(JSON.stringify(obj))
         }
+
+        // render loop
+        const render = () => {
+            update(controller._state.pins)
+            setTimeout(() => {
+                requestAnimationFrame(render)
+            }, interval)
+        }
+
+        // start render
+        render(controller._state.pins)
+
+        this.setInterval = time => {
+            interval = time
+        }
+
 
     }
 

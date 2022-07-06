@@ -7,6 +7,41 @@ const INPUT_PULLUP = 2
 const HIGH = 1
 const LOW = 0
 
+// serial message categories
+const CAT = {
+    'CAT_CMMN' : 201, // common
+    'CAT_SNSR' : 202, // sensors
+    'CAT_MODS' : 203  // modules
+}
+
+// serial message methods under categories
+const MTD = {
+    'CAT_CMMN' : {
+        'UJS_CLNT' : 0, // UNO.js client version
+        'PIN_MODE' : 1, // pinMode()
+        'PIN_STAT' : 2, // digitalRead(), analogRead()
+        'DT_WRITE' : 3, // digitalWrite()
+        'AL_WRITE' : 4, // analogWrite()
+        'DLY_MLSC' : 5, // delay()
+        'DLY_MRSC' : 6, // delayMicroseconds()
+        'TIM_MLSC' : 7, // millis()
+        'TIM_MRSC' : 8  // micros()
+    },
+    'CAT_SNSR' : {
+        'USS_READ' : 0 // unltrasonic pulseIn()
+    },
+    'CAT_MODS' : {
+        'SVR_ATCH' : 0,  // svr.attach()
+        'SVR_WRTE' : 1,  // svr.write()
+        'ACL_POWR' : 10, // adxl.powerOn()
+        'ACL_READ' : 11, // adxl.readAccel()
+        'LCD_BEGN' : 20, // lcd.begin()
+        'LCD_CRSR' : 21, // lcd.setCursor()
+        'LCD_PRNT' : 22, // lcd.print()
+        'LCD_CLER' : 23  // lcd.clear()
+    }
+}
+
 // main class
 const UNO = class {
     
@@ -149,8 +184,6 @@ const UNO = class {
             states.digital = digital.splice(0, digital.length - 1)
             // update analog pins
             states.analog = analog.splice(0, analog.length - 1)
-            // update state ui utils
-            this.utils.filter(x => x.isStateUI).forEach(x => x.update(states))
             // remove end character
             if(data[data.length - 1] === 255) { data.pop() }
             // callback resolve after updaing pin states
@@ -160,7 +193,7 @@ const UNO = class {
         // get version method
         this.init.getVersion = async function() {
             return new Promise((resolve, reject) => {
-                send(201, 0, arr => {
+                send(CAT.CAT_CMMN, MTD.CAT_CMMN.UJS_CLNT, arr => {
                     resolve(arr.splice(0, 3).join('.'))
                 }, reject)
             })
@@ -170,7 +203,7 @@ const UNO = class {
         this.update = async function() {
             // return promise
             return new Promise((resolve, reject) => {
-                send(201, 2, resolve, reject, [])
+                send(CAT.CAT_CMMN, MTD.CAT_CMMN.PIN_STAT, resolve, reject, [])
             })
         }
 
@@ -261,7 +294,7 @@ const UNO = class {
             const data = convertPinFormat(arguments, ['OUTPUT', 'INPUT', 'INPUT_PULLUP'])
             // return promise
             return new Promise((resolve, reject) => {
-                send(201, 1, resolve, reject, data)
+                send(CAT.CAT_CMMN, MTD.CAT_CMMN.PIN_MODE, resolve, reject, data)
             })
         }
 
@@ -271,7 +304,7 @@ const UNO = class {
             const data = convertPinFormat(arguments, ['LOW', 'HIGH'])
             // return promise
             return new Promise((resolve, reject) => {
-                send(201, 3, resolve, reject, data)
+                send(CAT.CAT_CMMN, MTD.CAT_CMMN.DT_WRITE, resolve, reject, data)
             })
         }
 
@@ -281,7 +314,7 @@ const UNO = class {
             const data = convertPinFormatAnalog(arguments)
             // return promise
             return new Promise((resolve, reject) => {
-                send(201, 4, resolve, reject, data)
+                send(CAT.CAT_CMMN, MTD.CAT_CMMN.AL_WRITE, resolve, reject, data)
             })
         }
 
@@ -294,7 +327,7 @@ const UNO = class {
             const data = Array.from(encoder.encode(milliseconds))
             // return promise
             return new Promise((resolve, reject) => {
-                send(201, 5, resolve, reject, data)
+                send(CAT.CAT_CMMN, MTD.CAT_CMMN.DLY_MLSC, resolve, reject, data)
             })
         }
 
@@ -304,7 +337,7 @@ const UNO = class {
             const data = Array.from(encoder.encode(microseconds))
             // return promise
             return new Promise((resolve, reject) => {
-                send(201, 6, resolve, reject, data)
+                send(CAT.CAT_CMMN, MTD.CAT_CMMN.DLY_MRSC, resolve, reject, data)
             })
         }
 
@@ -312,7 +345,7 @@ const UNO = class {
         this.millis = async function() {
             // return promise
             return new Promise((resolve, reject) => {
-                send(201, 7, arr => {
+                send(CAT.CAT_CMMN, MTD.CAT_CMMN.TIM_MLSC, arr => {
                     // decode and resolve
                     resolve(parseInt(decoder.decode(new Uint8Array(arr))))
                 }, reject, [])
@@ -323,15 +356,15 @@ const UNO = class {
         this.micros = async function() {
             // return promise
             return new Promise((resolve, reject) => {
-                send(201, 8, arr => {
+                send(CAT.CAT_CMMN, MTD.CAT_CMMN.TIM_MRSC, arr => {
                     // decode and resolve
                     resolve(parseInt(decoder.decode(new Uint8Array(arr))))
                 }, reject, [])
             })
         }
 
-        // controller utils
-        this.utils = []
+        // controller state
+        this._state = { pins : states }
 
     }
 
