@@ -43,9 +43,9 @@ const MTD = {
 }
 
 // color code by index method
-const CLR = i => {
+const CLR = (i = 0) => {
     const colors = ['ff3300', '00cc99', '0066cc', '6666ff', 'ff66cc', 'ff9933']
-    return '#' + colors[i % colors.length]
+    return '#' + colors[parseInt(i) % colors.length]
 }
 
 const UNO = {}
@@ -66,6 +66,8 @@ UNO.Controller = class {
             return new Promise(resolve => {
                 // request usb port
                 navigator.serial.requestPort().then(portObject => {
+                    // set wait state
+                    state.wait = true
                     // store port object
                     port = portObject
                     // opening port
@@ -80,6 +82,7 @@ UNO.Controller = class {
                                 if(versions.includes(ver)) {
                                     // set running flag
                                     state.runs = true
+                                    state.wait = false
                                     begin = false
                                     // callback resolve
                                     resolve()
@@ -108,8 +111,10 @@ UNO.Controller = class {
                 port.close()
                 begin = true
                 state.runs = false
+                state.wait = null
                 needStop = false
                 needStopResolve()
+                reject()
                 return
             }
             // return if busy
@@ -388,7 +393,7 @@ UNO.Controller = class {
         this._state = {
             pins : { digital : [], analog : [] },
             msgs : { sent : [], received : [] },
-            runs : false
+            runs : false, wait : null
         }
 
         // state class usage
@@ -398,6 +403,7 @@ UNO.Controller = class {
         navigator.serial.addEventListener('disconnect', event => {
             if(event.target === port) {
                 state.runs = false
+                state.wait = null
                 begin = true
             }
         })
@@ -405,6 +411,7 @@ UNO.Controller = class {
         this.stop = async function() {
             return new Promise(resolve => {
                 needStop = true
+                state.wait = true
                 needStopResolve = resolve
             })
         }

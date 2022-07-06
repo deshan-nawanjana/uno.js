@@ -1,7 +1,6 @@
 .unojs-util-start-button {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     height: 50px;
-    width: 130px;
     background-color: #3366ff;
     border: none;
     color: #FFF;
@@ -17,7 +16,9 @@
     box-shadow: 0px 3px 15px rgba(0,0,0,0.1);
     opacity: 0.9;
     text-align: center;
+    margin: 20px;
     display: block;
+    user-select: none;
     outline: none;
 }
 
@@ -25,27 +26,44 @@
     opacity: 1;
 }
 
-.unojs-util-start-button-stopped {
+.unojs-util-start-button.start {
     background-image: url('data:image/svg+xml,<svg version="1.1" viewBox="0 0 24 24" width="200" height="200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="fill: rgb(255, 255, 255); opacity: 1; transform: rotate(0deg) scale(0.8, 0.8);"><g><path d="M8 5v14l11-7z"></path></g></svg>');
 }
 
-.unojs-util-start-button-stopped::after {
+.unojs-util-start-button.start::after {
     content: 'START';
 }
 
-.unojs-util-start-button-running {
+.unojs-util-start-button.starting {
+    width: 160px;
+    background-image: url("data:image/svg+xml,%3Csvg width='80px' height='80px' xmlns='http://www.w3.org/2000/svg' viewBox='-10 0 100 100' preserveAspectRatio='xMidYMid' class='lds-bars' style=''%3E%3Crect ng-attr-x='%7B%7Bconfig.x1%7D%7D' y='30' ng-attr-width='%7B%7Bconfig.width%7D%7D' height='40' fill='%23ffffff44' x='14' width='12'%3E%3Canimate attributeName='opacity' calcMode='spline' values='1;0.2;1' keyTimes='0;0.5;1' dur='1' keySplines='0.5 0 0.5 1;0.5 0 0.5 1' begin='-0.6s' repeatCount='indefinite'%3E%3C/animate%3E%3C/rect%3E%3Crect ng-attr-x='%7B%7Bconfig.x2%7D%7D' y='30' ng-attr-width='%7B%7Bconfig.width%7D%7D' height='40' fill='%23ffffff44' x='34' width='12'%3E%3Canimate attributeName='opacity' calcMode='spline' values='1;0.2;1' keyTimes='0;0.5;1' dur='1' keySplines='0.5 0 0.5 1;0.5 0 0.5 1' begin='-0.4s' repeatCount='indefinite'%3E%3C/animate%3E%3C/rect%3E%3Crect ng-attr-x='%7B%7Bconfig.x3%7D%7D' y='30' ng-attr-width='%7B%7Bconfig.width%7D%7D' height='40' fill='%23ffffff44' x='54' width='12'%3E%3Canimate attributeName='opacity' calcMode='spline' values='1;0.2;1' keyTimes='0;0.5;1' dur='1' keySplines='0.5 0 0.5 1;0.5 0 0.5 1' begin='-0.2s' repeatCount='indefinite'%3E%3C/animate%3E%3C/rect%3E%3C/svg%3E");
+}
+
+.unojs-util-start-button.starting::after {
+    content: 'WAITING';
+}
+
+.unojs-util-start-button.running {
     width: 160px;
     background-image: url("data:image/svg+xml,%3Csvg width='80px' height='80px' xmlns='http://www.w3.org/2000/svg' viewBox='-10 0 100 100' preserveAspectRatio='xMidYMid' class='lds-bars' style=''%3E%3Crect ng-attr-x='%7B%7Bconfig.x1%7D%7D' y='30' ng-attr-width='%7B%7Bconfig.width%7D%7D' height='40' fill='%23ffffff' x='14' width='12'%3E%3Canimate attributeName='opacity' calcMode='spline' values='1;0.2;1' keyTimes='0;0.5;1' dur='1' keySplines='0.5 0 0.5 1;0.5 0 0.5 1' begin='-0.6s' repeatCount='indefinite'%3E%3C/animate%3E%3C/rect%3E%3Crect ng-attr-x='%7B%7Bconfig.x2%7D%7D' y='30' ng-attr-width='%7B%7Bconfig.width%7D%7D' height='40' fill='%23ffffff' x='34' width='12'%3E%3Canimate attributeName='opacity' calcMode='spline' values='1;0.2;1' keyTimes='0;0.5;1' dur='1' keySplines='0.5 0 0.5 1;0.5 0 0.5 1' begin='-0.4s' repeatCount='indefinite'%3E%3C/animate%3E%3C/rect%3E%3Crect ng-attr-x='%7B%7Bconfig.x3%7D%7D' y='30' ng-attr-width='%7B%7Bconfig.width%7D%7D' height='40' fill='%23ffffff' x='54' width='12'%3E%3Canimate attributeName='opacity' calcMode='spline' values='1;0.2;1' keyTimes='0;0.5;1' dur='1' keySplines='0.5 0 0.5 1;0.5 0 0.5 1' begin='-0.2s' repeatCount='indefinite'%3E%3C/animate%3E%3C/rect%3E%3C/svg%3E");
 }
 
-.unojs-util-start-button-running:hover {
+.unojs-util-start-button.running:hover {
     background-image: url('data:image/svg+xml,<svg version="1.1" viewBox="0 0 16 16" width="200" height="200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="fill: rgb(255, 255, 255); opacity: 1; transform: rotate(0deg) scale(1, 1);"><g><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"></path></g></svg>');
 }
 
-.unojs-util-start-button-running::after {
+.unojs-util-start-button.running::after {
     content: 'RUNNING';
 }
 
-.unojs-util-start-button-running:hover::after {
+.unojs-util-start-button.running:hover::after {
     content: 'STOP';
+}
+
+.unojs-util-start-button.stopping {
+    background-image: url('data:image/svg+xml,<svg version="1.1" viewBox="0 0 24 24" width="200" height="200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="fill: rgb(255, 255, 255); opacity: 1; transform: rotate(0deg) scale(0.8, 0.8);"><g><path d="M8 5v14l11-7z"></path></g></svg>');
+}
+
+.unojs-util-start-button.stopping::after {
+    content: 'STOPPING';
 }

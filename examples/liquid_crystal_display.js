@@ -1,14 +1,14 @@
 const uno = new UNO.Controller()
+// create state view
+const sta = new UNO.StateView('Text Displaying', '', 2, true)
 // create liquid crystal display
 const lcd = new UNO.LiquidCrystalDisplay(uno)
-// create voltage monitor
-const vlm = new UNO.VoltageMonitor(uno)
-// create serial monitor
-const srm = new UNO.SerialMonitor(uno)
 
 const init = async function() {
-    // start uno.js
+    // start controller
     await uno.init()
+    // show state view
+    sta.show()
     // start lcd
     await lcd.begin(16, 2)
     // start loop
@@ -18,20 +18,28 @@ const init = async function() {
 const loop = async function() {
     // set cursor position
     await lcd.setCursor(0, 0)
+    // text to print
+    const text = Date.now()
     // print on lcd
-    await lcd.print(Date.now())
+    await lcd.print(text)
+    // update state view
+    sta.update(text, 2)
     // loop again
     loop()
 }
 
+const stop = async function() {
+    // stop controller
+    await uno.stop()
+    // hide state view
+    sta.hide()
+}
+
 // create start button
-const btn = new UNO.StartButton(uno, init)
-
-// append voltage monitor to body
-document.body.append(vlm.element)
-
-// append serial monitor to body
-document.body.append(srm.element)
+const btn = new UNO.StartButton(uno, init, stop)
 
 // append start button to body
 document.body.append(btn.element)
+
+// append state view to body
+document.body.append(sta.element)

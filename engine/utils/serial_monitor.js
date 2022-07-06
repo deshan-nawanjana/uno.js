@@ -1,6 +1,6 @@
 UNO.SerialMonitor = class {
 
-    constructor(controller) {
+    constructor(controller, hidden = false) {
 
         // update interval
         let interval = 50
@@ -33,6 +33,9 @@ UNO.SerialMonitor = class {
             <div class="serial-monitor-item"></div>
         `
 
+        // hidden state
+        if(hidden) { this.element.style.display = 'none' }
+
         const items = Array.from(this.element.querySelectorAll('.serial-monitor-item'))
 
         // mode selection listener
@@ -61,6 +64,14 @@ UNO.SerialMonitor = class {
 
         this.setInterval = time => {
             interval = time
+        }
+
+        this.show = () => {
+            this.element.style.display = ''
+        }
+
+        this.hide = () => {
+            this.element.style.display = 'none'
         }
 
     }

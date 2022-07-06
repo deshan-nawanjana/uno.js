@@ -1,0 +1,30 @@
+.unojs-util-state-view {
+    width: 300px;
+    height: 240px;
+    display: block;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    margin: 20px;
+    box-shadow: 0px 3px 15px rgba(0,0,0,0.1);
+    user-select: none;
+    outline: none;
+}
+
+.unojs-util-state-view > .state-view-title {
+    text-align: center;
+    height: 40px;
+    line-height: 40px;
+    color: #FFF6;
+    font-size: 12px;
+    background-color: #1118;
+    text-align: left;
+    padding: 0px 0px 0px 15px;
+}
+
+.unojs-util-state-view > .state-view-inner {
+    height: 200px;
+    text-align: center;
+    line-height: 180px;
+    font-weight: 500;
+    font-size: 18px;
+    color: #FFF;
+}

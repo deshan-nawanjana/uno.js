@@ -1,0 +1,50 @@
+.unojs-util-graph-view {
+    width: 300px;
+    display: block;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    margin: 20px;
+    box-shadow: 0px 3px 15px rgba(0,0,0,0.1);
+    user-select: none;
+    outline: none;
+    background-color: #222;
+}
+
+.unojs-util-graph-view > .graph-view-title {
+    text-align: center;
+    height: 40px;
+    line-height: 40px;
+    color: #FFF6;
+    font-size: 12px;
+    background-color: #1118;
+    text-align: left;
+    padding: 0px 0px 0px 15px;
+}
+
+.graph-view-inner {
+    width: 300px;
+    display: flex;
+}
+
+.graph-view-labels {
+    width: 70px;
+    font-size: 10px;
+}
+
+.graph-view-values {
+    width: 40px;
+    background-color: #1112;
+    font-size: 10px;
+}
+
+.graph-view-labels > .label {
+    height: 60px;
+    line-height: 60px;
+    text-align: center;
+    color: #FFF5;
+}
+
+.graph-view-values > .value {
+    height: 60px;
+    line-height: 60px;
+    text-align: center;
+}

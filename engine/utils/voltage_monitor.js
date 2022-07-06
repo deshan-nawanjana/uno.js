@@ -1,6 +1,6 @@
 UNO.VoltageMonitor = class {
 
-    constructor(controller) {
+    constructor(controller, hidden = false) {
 
         // update interval
         let interval = 50
@@ -26,6 +26,9 @@ UNO.VoltageMonitor = class {
                 <canvas class="digital-canvas" width="270" height="0"></canvas>
             </div>
         `
+
+        // hidden state
+        if(hidden) { this.element.style.display = 'none' }
 
         const digitalCanvas = this.element.querySelector('.digital-canvas')
         const analogCanvas = this.element.querySelector('.analog-canvas')
@@ -132,6 +135,13 @@ UNO.VoltageMonitor = class {
             interval = time
         }
 
+        this.show = () => {
+            this.element.style.display = ''
+        }
+
+        this.hide = () => {
+            this.element.style.display = 'none'
+        }
 
     }
 

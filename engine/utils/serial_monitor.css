@@ -1,19 +1,17 @@
 .unojs-util-serial-monitor {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     background-color: #222;
-    position: fixed;
-    top: calc(100vh - 305px);
-    width: calc(100vw - 410px);
+    width: calc(100% - 40px);
     height: 285px;
-    left: 20px;
     box-shadow: 0px 3px 15px rgba(0,0,0,0.1);
     max-height: calc(100vh - 40px);
     overflow-y: hidden;
     overflow-x: hidden;
-    user-select: none;
-    outline: none;
     cursor: default;
     font-size: 10px;
+    margin: 20px;
+    user-select: none;
+    outline: none;
 }
 
 .serial-monitor-title {
