@@ -11,7 +11,7 @@ UNO.GraphView = class {
             <div class="graph-view-inner" style="height: ${parametersCount * 60}px;">
                 <div class="graph-view-labels"></div>
                 <div class="graph-view-values"></div>
-                <canvas height="${parametersCount * 60}" width="190"></canvas>
+                <canvas height="${parametersCount * 60}" width="170"></canvas>
             </div>
         `
 
@@ -27,7 +27,7 @@ UNO.GraphView = class {
         const values = this.element.querySelector('.graph-view-values')
 
         // canvas height
-        const w = 190
+        const w = 170
 
         // for each parameter
         for(let i = 0; i < Math.abs(parametersCount); i++) {
@@ -55,7 +55,7 @@ UNO.GraphView = class {
         let old = {}
 
         // calculate multiplier
-        const mul = 30 / (rangeMax - rangeMin)
+        const mul = 60 / (rangeMax - rangeMin)
 
         this.update = input => {
             // shift canvas
@@ -76,13 +76,13 @@ UNO.GraphView = class {
                 // set value
                 if(val.innerHTML !== value) { val.innerHTML = value }
                 // draw value
-                const a = (old[label] !== undefined ? old[label] : 0) * mul
-                const b = value * mul
+                const a = ((old[label] !== undefined ? old[label] : 0) - rangeMin) * mul
+                const b = (value - rangeMin) * mul
                 // draw line
                 ctx.strokeStyle = CLR(index)
                 ctx.beginPath()
-                ctx.moveTo(w - 20, (index * 60) + 30 - a)
-                ctx.lineTo(w, (index * 60) + 30 - b)
+                ctx.moveTo(w - 20, (index * 60) + (60 - a))
+                ctx.lineTo(w, (index * 60) + (60 - b))
                 ctx.stroke()
             })
             // store history
