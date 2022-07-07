@@ -2,6 +2,7 @@
 #include <Wire.h>
 #include <ADXL345.h>
 #include <LiquidCrystal.h>
+#include <SFE_BMP180.h>
 
 // =========== 201 - common methods ===========
 #define CAT_CMMN 201
@@ -24,6 +25,10 @@
 
 // unltrasonic sensor
 #define USS_READ 0 // pulse in to read duration
+
+// barometric pressure sensor
+#define BPS_BEGN 10
+#define BPS_READ 11
 
 // =========== 203 - modules methods ===========
 #define CAT_MODS 203
@@ -126,6 +131,16 @@ void loop() {
       sendPinStates();
       Serial.write(SPR);
       getUltrasonicDuration();
+    } else if(bytes[1] == BPS_BEGN) {
+      Serial.write(BPS_BEGN);
+      sendPinStates();
+      Serial.write(SPR);
+      BPSBegin();
+    } else if(bytes[1] == BPS_READ) {
+      Serial.write(BPS_READ);
+      sendPinStates();
+      Serial.write(SPR);
+      BPSRead();
     }
   } else if(bytes[0] == CAT_MODS) {
     // devices
@@ -181,7 +196,7 @@ void separateEnd() {
 void sendJSVersion() {
   // pins state flag
   Serial.write(1);
-  Serial.write(0);
+  Serial.write(1);
   Serial.write(22);
 }
 
@@ -222,7 +237,7 @@ void setAnalogWrite() {
   }
 }
 
-int getInt(int index) {
+float getFloat(int index) {
   // string to collect bytes
   String out = "0.00000000000000";
   // current byte index
@@ -250,17 +265,17 @@ int getInt(int index) {
   // put end char
   out[cr_c] = '\0';
   // return int version
-  return out.toInt();
+  return out.toFloat();
 }
 
 void setDelayMilliseconds() {
-  int value = getInt(0);
-  delay(value);
+  int value = getFloat(0);
+  delay((int)value);
 }
 
 void setDelayMicroseconds() {
-  int value = getInt(0);
-  delayMicroseconds(value);
+  int value = getFloat(0);
+  delayMicroseconds((int)value);
 }
 
 void getMillis() {
@@ -341,4 +356,71 @@ void LCDPrint() {
 
 void LCDClear() {
   lcd.clear();
+}
+
+SFE_BMP180 pressure;
+
+void BPSBegin() {
+  if(pressure.begin()){
+    Serial.write(1);
+  } else {
+    Serial.write(0);
+  }
+}
+
+void BPSRead() {
+  // status char
+  char status;
+  // variables
+  double T, P, p0;
+  // provided altitude
+  float alt = getFloat(0);
+  // check temp status
+  status = pressure.startTemperature();
+  if(status != 0) {
+    delay(status);
+    status = pressure.getTemperature(T);
+    if(status != 0) {
+      // temperature in deg C
+      Serial.print(T, 1);
+      Serial.write(SPR);
+      status = pressure.startPressure(3);
+      if(status != 0) {
+        delay(status);
+        status = pressure.getPressure(P, T);
+        if(status != 0) {
+          // pressure measurement
+          Serial.print(P);
+          Serial.write(SPR);
+          p0 = pressure.sealevel(P, alt);
+          // relative (sea-level) pressure in hPa
+          Serial.print(p0);
+          Serial.write(SPR);
+        } else {
+          // return #3
+          PrintNeutral();
+          PrintNeutral();
+        }
+      } else {
+        // return #3
+        PrintNeutral();
+        PrintNeutral();
+      }
+    } else {
+      // return #2
+      PrintNeutral();
+      PrintNeutral();
+      PrintNeutral();
+    }
+  } else {
+    // return #1
+    PrintNeutral();
+    PrintNeutral();
+    PrintNeutral();
+  }
+}
+
+void PrintNeutral() {
+  Serial.write(NTR);
+  Serial.write(SPR);
 }

@@ -28,7 +28,9 @@ const MTD = {
         'TIM_MRSC' : 8  // micros()
     },
     'CAT_SNSR' : {
-        'USS_READ' : 0 // unltrasonic pulseIn()
+        'USS_READ' : 0,  // unltrasonic pulseIn()
+        'BPS_BEGN' : 10, // pressure.begin()
+        'BPS_READ' : 11  // pressure.getTemperature(), pressure.getPressure()
     },
     'CAT_MODS' : {
         'SVR_ATCH' : 0,  // svr.attach()
@@ -58,12 +60,15 @@ UNO.Controller = class {
         // port object
         let port = null
 
-        // supported versions
+        // current version
+        const version = '1.1.22'
+
+        // other versions
         const versions = ['1.0.22']
 
         // init method
         this.init = async function() {
-            return new Promise(resolve => {
+            return new Promise((resolve, reject) => {
                 // request usb port
                 navigator.serial.requestPort().then(portObject => {
                     // set wait state
@@ -79,16 +84,20 @@ UNO.Controller = class {
                         setTimeout(() => {
                             // request client version
                             this.init.getVersion().then(ver => {
-                                if(versions.includes(ver)) {
+                                if(ver === version) {
                                     // set running flag
                                     state.runs = true
                                     state.wait = false
                                     begin = false
                                     // callback resolve
                                     resolve()
+                                } else if(versions.includes(ver)) {
+                                    // version not mismatch
+                                    console.warn('Please update the UNO.js client. System may not work properly.')
+                                    console.log('Library : ' + version)
+                                    console.log('Client  : ' + ver)
                                 } else {
-                                    // version not supported
-                                    console.log('Please update the UNO.js Client.')
+                                    reject('Oops! Seems like UNO.js client is not installed in your controller.\nDownload UNO.js client: https://github.com/deshan-nawanjana/uno.js/tree/main/client')
                                 }
                             })
                         }, 3000)
