@@ -1,5 +1,5 @@
 /*!
- * uno.js v1.0.22 (https://github.com/deshan-nawanjana/uno.js)
+ * uno.js v1.1.22 (https://github.com/deshan-nawanjana/uno.js)
  * Copyright 2022 Deshan Nawanjana
  * Licensed under the MIT license
  */
@@ -34,7 +34,9 @@ const MTD = {
         'TIM_MRSC' : 8  // micros()
     },
     'CAT_SNSR' : {
-        'USS_READ' : 0 // unltrasonic pulseIn()
+        'USS_READ' : 0,  // ultrasonic pulseIn()
+        'BPS_BEGN' : 10, // pressure.begin()
+        'BPS_READ' : 11  // pressure.getTemperature(), pressure.getPressure()
     },
     'CAT_MODS' : {
         'SVR_ATCH' : 0,  // svr.attach()
@@ -64,12 +66,15 @@ UNO.Controller = class {
         // port object
         let port = null
 
-        // supported versions
+        // current version
+        const version = '1.1.22'
+
+        // other versions
         const versions = ['1.0.22']
 
         // init method
         this.init = async function() {
-            return new Promise(resolve => {
+            return new Promise((resolve, reject) => {
                 // request usb port
                 navigator.serial.requestPort().then(portObject => {
                     // set wait state
@@ -85,16 +90,20 @@ UNO.Controller = class {
                         setTimeout(() => {
                             // request client version
                             this.init.getVersion().then(ver => {
-                                if(versions.includes(ver)) {
+                                if(ver === version) {
                                     // set running flag
                                     state.runs = true
                                     state.wait = false
                                     begin = false
                                     // callback resolve
                                     resolve()
+                                } else if(versions.includes(ver)) {
+                                    // version not mismatch
+                                    console.warn('Please update the UNO.js client. System may not work properly.')
+                                    console.log('Library : ' + version)
+                                    console.log('Client  : ' + ver)
                                 } else {
-                                    // version not supported
-                                    console.log('Please update the UNO.js Client.')
+                                    reject('Oops! Seems like UNO.js client is not installed in your controller.\nDownload UNO.js client: https://github.com/deshan-nawanjana/uno.js/tree/main/client')
                                 }
                             })
                         }, 3000)
@@ -546,6 +555,47 @@ UNO.UltrasonicSensor = class {
 
 }
 
+UNO.BarometricPressureSensor = class {
+
+    constructor(controller, defaultAltitude = 840.0) {
+
+        this.defaultAltitude = defaultAltitude
+
+        this.begin = async function() {
+            return new Promise((resolve, reject) => {
+                controller.send(CAT.CAT_SNSR, MTD.CAT_SNSR.BPS_BEGN, resolve, reject, [])
+            })
+        }
+
+        const encoder = new TextEncoder()
+        const decoder = new TextDecoder()
+
+        this.read = async function(altitude) {
+            const alt = altitude !== undefined ? altitude : this.defaultAltitude
+            const data = Array.from(encoder.encode(alt))
+            return new Promise((resolve, reject) => {
+                controller.send(CAT.CAT_SNSR, MTD.CAT_SNSR.BPS_READ, arr => {
+                    // get temperature
+                    const tmp = parseFloat(decoder.decode(new Uint8Array(arr.splice(0, arr.indexOf(254)))))
+                    arr.shift()
+                    // get pressure
+                    const psr = parseFloat(decoder.decode(new Uint8Array(arr.splice(0, arr.indexOf(254)))))
+                    arr.shift()
+                    // get relative pressure
+                    const prr = parseFloat(decoder.decode(new Uint8Array(arr.splice(0, arr.indexOf(254)))))
+                    resolve({
+                        temperature : tmp,
+                        pressure : psr,
+                        relativePressure : prr
+                    })
+                }, reject, data)
+            })
+        }
+        
+    }
+
+}
+
 UNO.GraphView = class {
 
     constructor(title, parametersCount = 1, rangeMin = 0, rangeMax = 1023, hidden = false) {
@@ -559,7 +609,7 @@ UNO.GraphView = class {
             <div class="graph-view-inner" style="height: ${parametersCount * 60}px;">
                 <div class="graph-view-labels"></div>
                 <div class="graph-view-values"></div>
-                <canvas height="${parametersCount * 60}" width="190"></canvas>
+                <canvas height="${parametersCount * 60}" width="170"></canvas>
             </div>
         `
 
@@ -575,7 +625,7 @@ UNO.GraphView = class {
         const values = this.element.querySelector('.graph-view-values')
 
         // canvas height
-        const w = 190
+        const w = 170
 
         // for each parameter
         for(let i = 0; i < Math.abs(parametersCount); i++) {
@@ -603,7 +653,7 @@ UNO.GraphView = class {
         let old = {}
 
         // calculate multiplier
-        const mul = 30 / (rangeMax - rangeMin)
+        const mul = 60 / (rangeMax - rangeMin)
 
         this.update = input => {
             // shift canvas
@@ -624,13 +674,13 @@ UNO.GraphView = class {
                 // set value
                 if(val.innerHTML !== value) { val.innerHTML = value }
                 // draw value
-                const a = (old[label] !== undefined ? old[label] : 0) * mul
-                const b = value * mul
+                const a = ((old[label] !== undefined ? old[label] : 0) - rangeMin) * mul
+                const b = (value - rangeMin) * mul
                 // draw line
                 ctx.strokeStyle = CLR(index)
                 ctx.beginPath()
-                ctx.moveTo(w - 20, (index * 60) + 30 - a)
-                ctx.lineTo(w, (index * 60) + 30 - b)
+                ctx.moveTo(w - 20, (index * 60) + (60 - a))
+                ctx.lineTo(w, (index * 60) + (60 - b))
                 ctx.stroke()
             })
             // store history
@@ -980,306 +1030,308 @@ UNO.VoltageMonitor = class {
 
     }
 
-}
+};
 
-const UNO_CSS = document.createElement('style')
+(function abc() {
+    const UNO_CSS = document.createElement('style')
 
-UNO_CSS.innerHTML = `
+    UNO_CSS.innerHTML = `
 
-.unojs-util-graph-view {
-    width: 300px;
-    display: block;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    margin: 20px;
-    box-shadow: 0px 3px 15px rgba(0,0,0,0.1);
-    user-select: none;
-    outline: none;
-    background-color: #222;
-}
-
-.unojs-util-graph-view > .graph-view-title {
-    text-align: center;
-    height: 40px;
-    line-height: 40px;
-    color: #FFF6;
-    font-size: 12px;
-    background-color: #1118;
-    text-align: left;
-    padding: 0px 0px 0px 15px;
-}
-
-.graph-view-inner {
-    width: 300px;
-    display: flex;
-}
-
-.graph-view-labels {
-    width: 70px;
-    font-size: 10px;
-}
-
-.graph-view-values {
-    width: 40px;
-    background-color: #1112;
-    font-size: 10px;
-}
-
-.graph-view-labels > .label {
-    height: 60px;
-    line-height: 60px;
-    text-align: center;
-    color: #FFF5;
-}
-
-.graph-view-values > .value {
-    height: 60px;
-    line-height: 60px;
-    text-align: center;
-}
-
-.unojs-util-serial-monitor {
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    background-color: #222;
-    width: calc(100% - 40px);
-    height: 285px;
-    box-shadow: 0px 3px 15px rgba(0,0,0,0.1);
-    max-height: calc(100vh - 40px);
-    overflow-y: hidden;
-    overflow-x: hidden;
-    cursor: default;
-    font-size: 10px;
-    margin: 20px;
-    user-select: none;
-    outline: none;
-}
-
-.serial-monitor-title {
-    text-align: center;
-    height: 40px;
-    line-height: 40px;
-    color: #FFF6;
-    font-size: 12px;
-    background-color: #1118;
-    text-align: left;
-    padding: 0px 0px 0px 15px;
-}
-
-.serial-monitor-item {
-    height: 30px;
-    white-space: nowrap;
-    font-size: 10px;
-    color: #FFF6;
-    overflow: hidden;
-    padding: 0px 10px 0px 10px;
-}
-
-.serial-monitor-item > div {
-    width: 20px;
-    text-align: center;
-    line-height: 30px;
-    display: inline-block;
-    font-size: 8px;
-}
-
-.serial-monitor-title > select {
-    float: right;
-    height: 40px;
-    border: none;
-    padding: 0px 10px 0px 0px;
-    margin: 0px 5px 0px 0px;
-    width: 140px;
-    text-align: right;
-    outline: none;
-    background-color: transparent;
-    color: #FFF6;
-}
-
-.serial-monitor-title > select > option {
-    background-color: #222;
-    color: #FFF6;
-}
-
-.unojs-util-start-button {
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    height: 50px;
-    background-color: #3366ff;
-    border: none;
-    color: #FFF;
-    cursor: pointer;
-    font-size: 18px;
-    line-height: 45px;
-    color: #FFFE;
-    background-position: 5px 5px;
-    background-repeat: no-repeat;
-    background-size: auto calc(100% - 10px);
-    padding-right: 20px;
-    padding-left: 50px;
-    box-shadow: 0px 3px 15px rgba(0,0,0,0.1);
-    opacity: 0.9;
-    text-align: center;
-    margin: 20px;
-    display: block;
-    user-select: none;
-    outline: none;
-}
-
-.unojs-util-start-button:hover {
-    opacity: 1;
-}
-
-.unojs-util-start-button.start {
-    background-image: url('data:image/svg+xml,<svg version="1.1" viewBox="0 0 24 24" width="200" height="200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="fill: rgb(255, 255, 255); opacity: 1; transform: rotate(0deg) scale(0.8, 0.8);"><g><path d="M8 5v14l11-7z"></path></g></svg>');
-}
-
-.unojs-util-start-button.start::after {
-    content: 'START';
-}
-
-.unojs-util-start-button.starting {
-    width: 160px;
-    background-image: url("data:image/svg+xml,%3Csvg width='80px' height='80px' xmlns='http://www.w3.org/2000/svg' viewBox='-10 0 100 100' preserveAspectRatio='xMidYMid' class='lds-bars' style=''%3E%3Crect ng-attr-x='%7B%7Bconfig.x1%7D%7D' y='30' ng-attr-width='%7B%7Bconfig.width%7D%7D' height='40' fill='%23ffffff44' x='14' width='12'%3E%3Canimate attributeName='opacity' calcMode='spline' values='1;0.2;1' keyTimes='0;0.5;1' dur='1' keySplines='0.5 0 0.5 1;0.5 0 0.5 1' begin='-0.6s' repeatCount='indefinite'%3E%3C/animate%3E%3C/rect%3E%3Crect ng-attr-x='%7B%7Bconfig.x2%7D%7D' y='30' ng-attr-width='%7B%7Bconfig.width%7D%7D' height='40' fill='%23ffffff44' x='34' width='12'%3E%3Canimate attributeName='opacity' calcMode='spline' values='1;0.2;1' keyTimes='0;0.5;1' dur='1' keySplines='0.5 0 0.5 1;0.5 0 0.5 1' begin='-0.4s' repeatCount='indefinite'%3E%3C/animate%3E%3C/rect%3E%3Crect ng-attr-x='%7B%7Bconfig.x3%7D%7D' y='30' ng-attr-width='%7B%7Bconfig.width%7D%7D' height='40' fill='%23ffffff44' x='54' width='12'%3E%3Canimate attributeName='opacity' calcMode='spline' values='1;0.2;1' keyTimes='0;0.5;1' dur='1' keySplines='0.5 0 0.5 1;0.5 0 0.5 1' begin='-0.2s' repeatCount='indefinite'%3E%3C/animate%3E%3C/rect%3E%3C/svg%3E");
-}
-
-.unojs-util-start-button.starting::after {
-    content: 'WAITING';
-}
-
-.unojs-util-start-button.running {
-    width: 160px;
-    background-image: url("data:image/svg+xml,%3Csvg width='80px' height='80px' xmlns='http://www.w3.org/2000/svg' viewBox='-10 0 100 100' preserveAspectRatio='xMidYMid' class='lds-bars' style=''%3E%3Crect ng-attr-x='%7B%7Bconfig.x1%7D%7D' y='30' ng-attr-width='%7B%7Bconfig.width%7D%7D' height='40' fill='%23ffffff' x='14' width='12'%3E%3Canimate attributeName='opacity' calcMode='spline' values='1;0.2;1' keyTimes='0;0.5;1' dur='1' keySplines='0.5 0 0.5 1;0.5 0 0.5 1' begin='-0.6s' repeatCount='indefinite'%3E%3C/animate%3E%3C/rect%3E%3Crect ng-attr-x='%7B%7Bconfig.x2%7D%7D' y='30' ng-attr-width='%7B%7Bconfig.width%7D%7D' height='40' fill='%23ffffff' x='34' width='12'%3E%3Canimate attributeName='opacity' calcMode='spline' values='1;0.2;1' keyTimes='0;0.5;1' dur='1' keySplines='0.5 0 0.5 1;0.5 0 0.5 1' begin='-0.4s' repeatCount='indefinite'%3E%3C/animate%3E%3C/rect%3E%3Crect ng-attr-x='%7B%7Bconfig.x3%7D%7D' y='30' ng-attr-width='%7B%7Bconfig.width%7D%7D' height='40' fill='%23ffffff' x='54' width='12'%3E%3Canimate attributeName='opacity' calcMode='spline' values='1;0.2;1' keyTimes='0;0.5;1' dur='1' keySplines='0.5 0 0.5 1;0.5 0 0.5 1' begin='-0.2s' repeatCount='indefinite'%3E%3C/animate%3E%3C/rect%3E%3C/svg%3E");
-}
-
-.unojs-util-start-button.running:hover {
-    background-image: url('data:image/svg+xml,<svg version="1.1" viewBox="0 0 16 16" width="200" height="200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="fill: rgb(255, 255, 255); opacity: 1; transform: rotate(0deg) scale(1, 1);"><g><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"></path></g></svg>');
-}
-
-.unojs-util-start-button.running::after {
-    content: 'RUNNING';
-}
-
-.unojs-util-start-button.running:hover::after {
-    content: 'STOP';
-}
-
-.unojs-util-start-button.stopping {
-    background-image: url('data:image/svg+xml,<svg version="1.1" viewBox="0 0 24 24" width="200" height="200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="fill: rgb(255, 255, 255); opacity: 1; transform: rotate(0deg) scale(0.8, 0.8);"><g><path d="M8 5v14l11-7z"></path></g></svg>');
-}
-
-.unojs-util-start-button.stopping::after {
-    content: 'STOPPING';
-}
-
-.unojs-util-state-view {
-    width: 300px;
-    height: 240px;
-    display: block;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    margin: 20px;
-    box-shadow: 0px 3px 15px rgba(0,0,0,0.1);
-    user-select: none;
-    outline: none;
-}
-
-.unojs-util-state-view > .state-view-title {
-    text-align: center;
-    height: 40px;
-    line-height: 40px;
-    color: #FFF6;
-    font-size: 12px;
-    background-color: #1118;
-    text-align: left;
-    padding: 0px 0px 0px 15px;
-}
-
-.unojs-util-state-view > .state-view-inner {
-    height: 200px;
-    text-align: center;
-    line-height: 180px;
-    font-weight: 500;
-    font-size: 18px;
-    color: #FFF;
-}
-
-.unojs-util-voltage-monitor {
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    background-color: #222;
-    width: 350px;
-    box-shadow: 0px 3px 15px rgba(0,0,0,0.1);
-    max-height: 500px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    cursor: default;
-    margin: 20px;
-    user-select: none;
-    outline: none;
-}
-
-.unojs-util-voltage-monitor::-webkit-scrollbar {
-    width: 3px;
-    height: 3px;
-}
-
-.unojs-util-voltage-monitor::-webkit-scrollbar-thumb {
-    background-color: #1111;
-}
-
-.unojs-util-voltage-monitor:hover::-webkit-scrollbar-thumb {
-    background-color: #FFF5;
-}
-
-.unojs-util-voltage-monitor > .digital-panel,
-.unojs-util-voltage-monitor > .analog-panel {
-    display: flex;
-}
-
-.digital-panel > .digital-values,
-.analog-panel > .analog-values {
-    background-color: #1112;
-    width: 40px;
-}
-
-.digital-panel > .digital-canvas,
-.analog-panel > .analog-canvas {
-    width: 270px;
-}
-
-.digital-values > .value-label,
-.analog-values > .value-label {
-    font-size: 10px;
-    text-align: center;
-    color: #FFF7;
-    height: 30px;
-    line-height: 30px;
-}
-
-.analog-index > .value-index,
-.analog-values > .value-label,
-.digital-index > .value-index,
-.digital-values > .value-label {
-    font-size: 10px;
-    text-align: center;
-    color: #FFF5;
-    height: 30px;
-    line-height: 30px;
-    width: 40px;
-}
-
-.unojs-util-voltage-monitor > .analog-panel-title, 
-.unojs-util-voltage-monitor > .digital-panel-title {
-    text-align: center;
-    height: 40px;
-    line-height: 40px;
-    color: #FFF6;
-    font-size: 12px;
-    background-color: #1118;
-}
-
-`
-
-if(document.head) {
-    document.head.appendChild(UNO_CSS)
-} else if(document.body) {
-    document.body.appendChild(UNO_CSS)
-} else {
-    document.documentElement.append(UNO_CSS)
-}
+    .unojs-util-graph-view {
+        width: 300px;
+        display: block;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        margin: 20px;
+        box-shadow: 0px 3px 15px rgba(0,0,0,0.1);
+        user-select: none;
+        outline: none;
+        background-color: #222;
+    }
+    
+    .unojs-util-graph-view > .graph-view-title {
+        text-align: center;
+        height: 40px;
+        line-height: 40px;
+        color: #FFF6;
+        font-size: 12px;
+        background-color: #1118;
+        text-align: left;
+        padding: 0px 0px 0px 15px;
+    }
+    
+    .graph-view-inner {
+        width: 300px;
+        display: flex;
+    }
+    
+    .graph-view-labels {
+        width: 70px;
+        font-size: 10px;
+    }
+    
+    .graph-view-values {
+        width: 60px;
+        background-color: #1112;
+        font-size: 8.5px;
+    }
+    
+    .graph-view-labels > .label {
+        height: 60px;
+        line-height: 60px;
+        text-align: center;
+        color: #FFF5;
+    }
+    
+    .graph-view-values > .value {
+        height: 60px;
+        line-height: 60px;
+        text-align: center;
+    }
+    
+    .unojs-util-serial-monitor {
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        background-color: #222;
+        width: calc(100% - 40px);
+        height: 285px;
+        box-shadow: 0px 3px 15px rgba(0,0,0,0.1);
+        max-height: calc(100vh - 40px);
+        overflow-y: hidden;
+        overflow-x: hidden;
+        cursor: default;
+        font-size: 10px;
+        margin: 20px;
+        user-select: none;
+        outline: none;
+    }
+    
+    .serial-monitor-title {
+        text-align: center;
+        height: 40px;
+        line-height: 40px;
+        color: #FFF6;
+        font-size: 12px;
+        background-color: #1118;
+        text-align: left;
+        padding: 0px 0px 0px 15px;
+    }
+    
+    .serial-monitor-item {
+        height: 30px;
+        white-space: nowrap;
+        font-size: 10px;
+        color: #FFF6;
+        overflow: hidden;
+        padding: 0px 10px 0px 10px;
+    }
+    
+    .serial-monitor-item > div {
+        width: 20px;
+        text-align: center;
+        line-height: 30px;
+        display: inline-block;
+        font-size: 8px;
+    }
+    
+    .serial-monitor-title > select {
+        float: right;
+        height: 40px;
+        border: none;
+        padding: 0px 10px 0px 0px;
+        margin: 0px 5px 0px 0px;
+        width: 140px;
+        text-align: right;
+        outline: none;
+        background-color: transparent;
+        color: #FFF6;
+    }
+    
+    .serial-monitor-title > select > option {
+        background-color: #222;
+        color: #FFF6;
+    }
+    
+    .unojs-util-start-button {
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        height: 50px;
+        background-color: #3366ff;
+        border: none;
+        color: #FFF;
+        cursor: pointer;
+        font-size: 18px;
+        line-height: 45px;
+        color: #FFFE;
+        background-position: 5px 5px;
+        background-repeat: no-repeat;
+        background-size: auto calc(100% - 10px);
+        padding-right: 20px;
+        padding-left: 50px;
+        box-shadow: 0px 3px 15px rgba(0,0,0,0.1);
+        opacity: 0.9;
+        text-align: center;
+        margin: 20px;
+        display: block;
+        user-select: none;
+        outline: none;
+    }
+    
+    .unojs-util-start-button:hover {
+        opacity: 1;
+    }
+    
+    .unojs-util-start-button.start {
+        background-image: url('data:image/svg+xml,<svg version="1.1" viewBox="0 0 24 24" width="200" height="200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="fill: rgb(255, 255, 255); opacity: 1; transform: rotate(0deg) scale(0.8, 0.8);"><g><path d="M8 5v14l11-7z"></path></g></svg>');
+    }
+    
+    .unojs-util-start-button.start::after {
+        content: 'START';
+    }
+    
+    .unojs-util-start-button.starting {
+        width: 160px;
+        background-image: url("data:image/svg+xml,%3Csvg width='80px' height='80px' xmlns='http://www.w3.org/2000/svg' viewBox='-10 0 100 100' preserveAspectRatio='xMidYMid' class='lds-bars' style=''%3E%3Crect ng-attr-x='%7B%7Bconfig.x1%7D%7D' y='30' ng-attr-width='%7B%7Bconfig.width%7D%7D' height='40' fill='%23ffffff44' x='14' width='12'%3E%3Canimate attributeName='opacity' calcMode='spline' values='1;0.2;1' keyTimes='0;0.5;1' dur='1' keySplines='0.5 0 0.5 1;0.5 0 0.5 1' begin='-0.6s' repeatCount='indefinite'%3E%3C/animate%3E%3C/rect%3E%3Crect ng-attr-x='%7B%7Bconfig.x2%7D%7D' y='30' ng-attr-width='%7B%7Bconfig.width%7D%7D' height='40' fill='%23ffffff44' x='34' width='12'%3E%3Canimate attributeName='opacity' calcMode='spline' values='1;0.2;1' keyTimes='0;0.5;1' dur='1' keySplines='0.5 0 0.5 1;0.5 0 0.5 1' begin='-0.4s' repeatCount='indefinite'%3E%3C/animate%3E%3C/rect%3E%3Crect ng-attr-x='%7B%7Bconfig.x3%7D%7D' y='30' ng-attr-width='%7B%7Bconfig.width%7D%7D' height='40' fill='%23ffffff44' x='54' width='12'%3E%3Canimate attributeName='opacity' calcMode='spline' values='1;0.2;1' keyTimes='0;0.5;1' dur='1' keySplines='0.5 0 0.5 1;0.5 0 0.5 1' begin='-0.2s' repeatCount='indefinite'%3E%3C/animate%3E%3C/rect%3E%3C/svg%3E");
+    }
+    
+    .unojs-util-start-button.starting::after {
+        content: 'WAITING';
+    }
+    
+    .unojs-util-start-button.running {
+        width: 160px;
+        background-image: url("data:image/svg+xml,%3Csvg width='80px' height='80px' xmlns='http://www.w3.org/2000/svg' viewBox='-10 0 100 100' preserveAspectRatio='xMidYMid' class='lds-bars' style=''%3E%3Crect ng-attr-x='%7B%7Bconfig.x1%7D%7D' y='30' ng-attr-width='%7B%7Bconfig.width%7D%7D' height='40' fill='%23ffffff' x='14' width='12'%3E%3Canimate attributeName='opacity' calcMode='spline' values='1;0.2;1' keyTimes='0;0.5;1' dur='1' keySplines='0.5 0 0.5 1;0.5 0 0.5 1' begin='-0.6s' repeatCount='indefinite'%3E%3C/animate%3E%3C/rect%3E%3Crect ng-attr-x='%7B%7Bconfig.x2%7D%7D' y='30' ng-attr-width='%7B%7Bconfig.width%7D%7D' height='40' fill='%23ffffff' x='34' width='12'%3E%3Canimate attributeName='opacity' calcMode='spline' values='1;0.2;1' keyTimes='0;0.5;1' dur='1' keySplines='0.5 0 0.5 1;0.5 0 0.5 1' begin='-0.4s' repeatCount='indefinite'%3E%3C/animate%3E%3C/rect%3E%3Crect ng-attr-x='%7B%7Bconfig.x3%7D%7D' y='30' ng-attr-width='%7B%7Bconfig.width%7D%7D' height='40' fill='%23ffffff' x='54' width='12'%3E%3Canimate attributeName='opacity' calcMode='spline' values='1;0.2;1' keyTimes='0;0.5;1' dur='1' keySplines='0.5 0 0.5 1;0.5 0 0.5 1' begin='-0.2s' repeatCount='indefinite'%3E%3C/animate%3E%3C/rect%3E%3C/svg%3E");
+    }
+    
+    .unojs-util-start-button.running:hover {
+        background-image: url('data:image/svg+xml,<svg version="1.1" viewBox="0 0 16 16" width="200" height="200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="fill: rgb(255, 255, 255); opacity: 1; transform: rotate(0deg) scale(1, 1);"><g><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"></path></g></svg>');
+    }
+    
+    .unojs-util-start-button.running::after {
+        content: 'RUNNING';
+    }
+    
+    .unojs-util-start-button.running:hover::after {
+        content: 'STOP';
+    }
+    
+    .unojs-util-start-button.stopping {
+        background-image: url('data:image/svg+xml,<svg version="1.1" viewBox="0 0 24 24" width="200" height="200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="fill: rgb(255, 255, 255); opacity: 1; transform: rotate(0deg) scale(0.8, 0.8);"><g><path d="M8 5v14l11-7z"></path></g></svg>');
+    }
+    
+    .unojs-util-start-button.stopping::after {
+        content: 'STOPPING';
+    }
+    
+    .unojs-util-state-view {
+        width: 300px;
+        height: 240px;
+        display: block;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        margin: 20px;
+        box-shadow: 0px 3px 15px rgba(0,0,0,0.1);
+        user-select: none;
+        outline: none;
+    }
+    
+    .unojs-util-state-view > .state-view-title {
+        text-align: center;
+        height: 40px;
+        line-height: 40px;
+        color: #FFF6;
+        font-size: 12px;
+        background-color: #1118;
+        text-align: left;
+        padding: 0px 0px 0px 15px;
+    }
+    
+    .unojs-util-state-view > .state-view-inner {
+        height: 200px;
+        text-align: center;
+        line-height: 180px;
+        font-weight: 500;
+        font-size: 18px;
+        color: #FFF;
+    }
+    
+    .unojs-util-voltage-monitor {
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        background-color: #222;
+        width: 350px;
+        box-shadow: 0px 3px 15px rgba(0,0,0,0.1);
+        max-height: 500px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        cursor: default;
+        margin: 20px;
+        user-select: none;
+        outline: none;
+    }
+    
+    .unojs-util-voltage-monitor::-webkit-scrollbar {
+        width: 3px;
+        height: 3px;
+    }
+    
+    .unojs-util-voltage-monitor::-webkit-scrollbar-thumb {
+        background-color: #1111;
+    }
+    
+    .unojs-util-voltage-monitor:hover::-webkit-scrollbar-thumb {
+        background-color: #FFF5;
+    }
+    
+    .unojs-util-voltage-monitor > .digital-panel,
+    .unojs-util-voltage-monitor > .analog-panel {
+        display: flex;
+    }
+    
+    .digital-panel > .digital-values,
+    .analog-panel > .analog-values {
+        background-color: #1112;
+        width: 40px;
+    }
+    
+    .digital-panel > .digital-canvas,
+    .analog-panel > .analog-canvas {
+        width: 270px;
+    }
+    
+    .digital-values > .value-label,
+    .analog-values > .value-label {
+        font-size: 10px;
+        text-align: center;
+        color: #FFF7;
+        height: 30px;
+        line-height: 30px;
+    }
+    
+    .analog-index > .value-index,
+    .analog-values > .value-label,
+    .digital-index > .value-index,
+    .digital-values > .value-label {
+        font-size: 10px;
+        text-align: center;
+        color: #FFF5;
+        height: 30px;
+        line-height: 30px;
+        width: 40px;
+    }
+    
+    .unojs-util-voltage-monitor > .analog-panel-title, 
+    .unojs-util-voltage-monitor > .digital-panel-title {
+        text-align: center;
+        height: 40px;
+        line-height: 40px;
+        color: #FFF6;
+        font-size: 12px;
+        background-color: #1118;
+    }
+    
+    `
+    
+    if(document.head) {
+        document.head.appendChild(UNO_CSS)
+    } else if(document.body) {
+        document.body.appendChild(UNO_CSS)
+    } else {
+        document.documentElement.append(UNO_CSS)
+    }
+}())
