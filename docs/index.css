@@ -1,0 +1,172 @@
+@font-face {
+    font-family: 'Inter';
+    src: url(./assets/fonts/Inter-Regular.woff2);
+}
+
+* {
+    font-family: 'Inter', sans-serif;
+    outline: none;
+}
+
+body {
+    background-color: #333;
+    margin: 0px;
+}
+
+.side_panel {
+    width: 300px;
+    height: 100vh;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    background-color: #1116;
+    user-select: none;
+}
+
+.side_panel_top {
+    height: 60px;
+    background-image: url(./assets/images/unojs_logo_500.png);
+    background-position: left;
+    background-repeat: no-repeat;
+    background-size: auto 100%;
+    background-color: #111;
+    padding-left: 60px;
+}
+
+.side_panel_title {
+    padding: 0px 20px;
+    line-height: 60px;
+    color: #FFFA;
+    font-size: 14px;
+}
+
+.side_panel_section_title {
+    line-height: 50px;
+    height: 50px;
+    white-space: nowrap;
+    padding: 0px 15px;
+    color: #FFFA;
+    font-size: 15px;
+    background-color: #0003;
+}
+
+.side_panel_file_item {
+    line-height: 40px;
+    height: 40px;
+    white-space: nowrap;
+    padding: 0px 15px 0px 35px;
+    color: #FFF7;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.1s;
+    box-shadow: inset 0px 0px #06c;
+}
+
+.side_panel_file_item.opned {
+    background-color: #fff1;
+    box-shadow: inset 4px 0px #06c;
+}
+
+.side_panel_file_item:hover {
+    background-color: #FFF1;
+}
+
+.side_panel_tray {
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+}
+
+.side_panel_tray::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+
+.side_panel_tray::-webkit-scrollbar-thumb {
+    background-color: #FFF2;
+}
+
+iframe {
+    width: calc(100vw - 300px);
+    height: 100vh;
+    border: none;
+    position: fixed;
+    top: 0px;
+    left: 300px;
+}
+
+body.center {
+    text-align: center;
+    margin: 0px 50px;
+}
+
+body.center::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+body.center::-webkit-scrollbar-thumb {
+    background-color: #FFF5;
+}
+
+pre::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+}
+
+pre::-webkit-scrollbar-thumb {
+    background-color: #FFF3;
+}
+
+.page {
+    display: inline-block;
+    margin: auto;
+    width: calc(100vw - 100px);
+    max-width: 900px;
+    text-align: left;
+    padding: 30px 0px;
+}
+
+h1 {
+    font-size: 30px;
+    color: #FFFA;
+    font-weight: 400;
+}
+
+h2 {
+    font-size: 24px;
+    color: #FFFA;
+    font-weight: 400;
+}
+
+p {
+    font-size: 18px;
+    color: #FFF7;
+}
+
+li {
+    color: #FFF6;
+    font-size: 16px;
+    line-height: 24px;
+    list-style: square;
+}
+
+p > code {
+    color: #FFF9;
+}
+
+pre > code * {
+    font-family: Consolas, 'Courier New', Courier, monospace;
+}
+
+a {
+    color: #3377ff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.language-path {
+    color: #fff6 !important;
+}

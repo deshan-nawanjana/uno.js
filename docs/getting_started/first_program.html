@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../index.css">
+    <link rel="stylesheet" href="../assets/libraries/prism.css">
+    <script src="../../dist/uno.min.js"></script>
+</head>
+<body class="center">
+    <div class="page">
+        <h1>Creating Your First uno.js Application</h1>
+        <p>
+            Once you have installed the client app in your microcontroller, you are ready to start with JavaScript development. Include the uno.js script in your web page head section and you can start writing your code right below it.
+        </p>
+        <pre><code class="language-html">&lt;html&gt;
+  &lt;head&gt;
+    &lt;script src="./src/uno.min.js"&gt;&lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;script&gt;
+      // write your uno.js code here
+    &lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    <p>
+        You can start by creating an UNO.Controller() and calling the init() method. This method will ask you to select the serial port. Then you have to select your Arduino microcontroller to continue. You have to use the init() method with some user gesture, otherwise browser won't let you to access the serial ports of your computer.
+    </p>
+<pre><code class="language-js">// create controller
+const myBoard = UNO.Controller()
+
+// start function
+const letsGo = () => {
+    // init controller
+    myBoard.init().then(() => {
+        // controller is connected
+    }).catch(() => {
+        // failed to connected
+    })
+}
+
+// click on window to start
+window.addEventListener('click', letsGo)</code></pre>
+    <p>
+        Use the async to do the development easily due to uno.js promise chain. Look at the following example of blinking an LED.
+    </p>
+    <h1>Blinking an LED</h1>
+    <p>
+        Click the following button and select your microcontroller to blink the LED that connected between PIN 13 and ground (GND).
+    </p>
+    <div class="example"></div>
+    <p>
+        In this example, basically you init the controller and without stopping you can blink an LED using digitalWrite() and delay() functions. You have to set the pinMode same as in Arduino programming.
+    </p>
+<pre><code class="language-js">// create controller
+const myBoard = UNO.Controller()
+
+// blink function
+const blink = async function() {
+    // init controller
+    await myBoard.init()
+    // set pin mode
+    await myBoard.pinMode(13, OUTPUT)
+    // loop forever
+    while(true) {
+        // turn on led and delay
+        await myBoard.digitalWrite(13, HIGH)
+        await myBoard.delay(500)
+        // turn off led and delay
+        await myBoard.digitalWrite(13, LOW)
+        await myBoard.delay(500)
+    }
+}
+
+// click on window to start
+window.addEventListener('click', blink)</code></pre>
+    </div>
+    <script src="../assets/libraries/prism.js"></script>
+    <script>
+        const uno = new UNO.Controller()
+
+        const init = async function() {
+            await uno.init()
+            await uno.pinMode(13, OUTPUT)
+            loop()
+        }
+
+        const loop = async function() {
+            await uno.digitalWrite(13, HIGH)
+            await uno.delay(500)
+            await uno.digitalWrite(13, LOW)
+            await uno.delay(500)
+            loop()
+        }
+
+        const stop = async function() {
+            await uno.stop()
+        }
+
+        const btn = new UNO.StartButton(uno, init, stop)
+
+        document.querySelector('.example').appendChild(btn.element)
+    </script>
+</body>
+</html>

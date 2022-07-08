@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../index.css">
+    <link rel="stylesheet" href="../assets/libraries/prism.css">
+</head>
+<body class="center">
+    <div class="page">
+        <h1>Handling Controller States</h1>
+        <p>
+            When you program an application using uno.js, user or the program it self should be able to stop communicating with the controller any time necessary. Since the structure of the Arduino programming is based on two main function such as setup() and loop(), here I'll recommand you three functions that can handle the microcontroller states easily.
+        </p>
+<pre><code class="language-js">// create controller
+const myBoard = UNO.Controller()
+
+const init = async function() {
+    // init controller
+    await myBoard.init()
+    // do the setup and start loop
+    loop()
+}
+
+const loop = async function() {
+    // update controller
+    await myBoard.update()
+    // call stop() when necessary
+    // run next step of the loop
+    loop()
+}
+
+const stop = async function() {
+    // stop controller
+    await myBoard.stop()
+}
+
+// click on window to start
+window.addEventListener('click', init)</code></pre>
+        <h1>Init Function</h1>
+        <p>
+            Use the init() function as the setup state of the microcontroller. Then before calling the loop() function for the first time, you can do the controller setup such as pinMode(). This method is much simmilar to setup() function in Arduino.
+        </p>
+        <h1>Loop and Update</h1>
+        <p>
+            After calling loop() function for the first time inside init() function, you have to place the loop() call at the end, inside the loop itself. If you have used any method from uno.js to communicate with controller inside the loop, it is not necessary to use the update() function to update the pin states of the controller. Therefore you have to be aware about the functions that you use inside loop() function and use only if update() function is required.
+        </p>
+        <h1>Stop Function</h1>
+        <p>
+            You can use the stop() function to terminate the communication between web browser and the controller. After that, you can call init() function again to start and no need of refreshing the web page or anything.
+        </p>
+    </div>
+
+    <script src="../assets/libraries/prism.js"></script>
+</body>
+</html>

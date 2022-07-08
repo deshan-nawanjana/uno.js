@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../index.css">
+    <link rel="stylesheet" href="../assets/libraries/prism.css">
+</head>
+<body class="center">
+    <div class="page">
+        <h1>Built-In Function</h1>
+        <p>
+            Most common function that you can see in the Arduino programming are also included into uno.js library. pinMode(), digitalWrite(), analogWrite(), digitalRead(), analogRead(), delay() are few of them. Let's look at those built-in functions one by one.
+        </p>
+        <h1>Digital I/O</h1>
+        <p>
+            Hanlding and reading the digital states of the controller is the main purpose of these functions. Use the pinMode() function to set the mode of a pin and provide pin number and the mode. There are three constants in the uno.js that you can use such as INPUT, OUTPUT and INPUT_PULLUP.
+        </p>
+<pre><code class="language-js">await myBoard.pinMode(4, INPUT)</code></pre>
+        <p>
+            If you need to set multiple pin modes at the same time, it is recommanded to use object input to do that for better performance.
+        </p>
+        <pre><code class="language-js">await myBoard.pinMode({
+  INPUT : [3, 4],
+  OUTPUT : [10]
+})</code></pre>
+        <p>
+            You can set the voltage of a pin using digitalWrite() function. Just provide the pin number and the voltage level such as HIGH and LOW.
+        </p>
+        <pre><code class="language-js">await myBoard.digitalWrite(6, HIGH)</code></pre>
+        <p>
+            Use the object input mode to handle digitalWrite() for multiple pins.
+        </p>
+        <pre><code class="language-js">await myBoard.digitalWrite({
+  HIGH : [6, 7],
+  LOW : [2, 8, 12]
+})</code></pre>
+        <p>
+            You can use digitalRead() function to read the current voltage level of a pin. Here do not use await operator because pin vlotage states automatically updates in the front-end after any other function that comes with uno.js. So it's acctually returnning the voltage value from a memory in web browser.
+        </p>
+        <pre><code class="language-js">const volt = myBoard.digitalRead(10)</code></pre>
+        <h1>Analog I/O</h1>
+        <p>
+            Use analogWrite() function to set an specific voltage level to a pin. The value that you provide should be an integer between 0 and 255. And be aware about the pins that you can vary the voltage level.
+        </p>
+        <pre><code class="language-js">await myBoard.analogWrite(6, 200)</code></pre>
+        <p>
+            You can use analogRead() function to read the current voltage level of a pin. The output value will be an integer between 0 and 1023.
+        </p>
+        <pre><code class="language-js">const volt = myBoard.analogRead(3)</code></pre>
+        <h1>Time</h1>
+        <p>
+            To deal with the time and stop the process for a movement, you have delay() and delayMicroseconds() functions within uno.js library. Just provide an integer value while using them.
+        </p>
+        <pre><code class="language-js">await myBoard.delay(100)
+await myBoard.delayMicroseconds(10)</code></pre>
+        <p>
+            Also you can request the driven time of the controller using millis() and micros() functions.
+        </p>
+        <pre><code class="language-js">const timeMil = await myBoard.millis()
+const timeMrc = await myBoard.micros()</code></pre>
+    </div>
+
+    <script src="../assets/libraries/prism.js"></script>
+</body>
+</html>

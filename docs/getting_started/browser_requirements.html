@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../index.css">
+    <link rel="stylesheet" href="../assets/libraries/prism.css">
+</head>
+<body class="center">
+    <div class="page">
+        <h1>Front-end Installation</h1>
+        <p>
+            Open <a href="../../dist/uno.min.js" download="uno.min.js">this link</a> to get the latest version of uno.js Library. You can download and attach the minified version of uno.js from following link. It is recommanded to download the file and attach in your side due to version change.
+        </p>
+        <p>
+            Include the script file in head section of your web page for the better performance.
+        </p>
+        <pre><code class="language-html">&lt;script src="path/to/file/uno.min.js"&gt;&lt;/script&gt;</code></pre>
+        <h1>Version Requirements</h1>
+        <p>
+            Be aware about the version of the source file. Features in the library are different when it comes to latest versions. This is much more important for the uno.js client program as well.
+        </p>
+        <p>
+            Once the browser connected to the controller, uno.js will check the version of the client and return a warning to the browser console if there is any mismatch.
+        </p>
+        <h1>Web Serial API</h1>
+        <p>
+            Since uno.js connects with the microcontroller using serial communication,  your browser should have the serial communication feature. You can check the availability by checking <code>navigator</code> Web APIs.
+        </p>
+<pre><code class="language-js">if ("serial" in navigator) {
+  // The Web Serial API is supported.
+}</code></pre>
+        <p>
+            So, make sure your browser is up to date. Also you can check the browser compatibility in <a href="https://developer.mozilla.org/en-US/docs/Web/API/Navigator/serial#browser_compatibility" target="_blank">MDN Docs</a>.
+        </p>
+        <h1>Secure Context</h1>
+        <p>
+            Even if you have an updated browser, Web Serial API may not be available for unsecure context such as <code>http://</code> or <code>file://</code>. Therefore, local development should hosted using a software like XAMPP or WAMP. Other than that, for all the secured websites in the internet would have access to this feature.
+        </p>
+        <p>
+            Warning for the secure context will appear in the console, that does not have access to Web Serial API to use uno.js, after you attach the script file.
+        </p>
+        <h1>Baud Rate</h1>
+        <p>
+            While uno.js communicates with the controller, using a baud rate such as 9,600 is not enough. The script may slow down due to low baud rate. uno.js library uses 2,000,000 baud rate for better performance. Those values were already defined in the library and client program as well. Therefore, changing those values may effect to your front-end program.
+        </p>
+    </div>
+    <script src="../assets/libraries/prism.js"></script>
+</body>
+</html>

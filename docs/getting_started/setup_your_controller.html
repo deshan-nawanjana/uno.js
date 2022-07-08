@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../index.css">
+    <link rel="stylesheet" href="../assets/libraries/prism.css">
+</head>
+<body class="center">
+    <div class="page">
+        <h1>Arduino Client Program of uno.js</h1>
+        <p>
+            The connection between web browser and the microcontroller happens due to the uno.js client application. It's a small Arduino program that has all the methods to read and execute commands from the serial port. Use <a href="../../dist/uno.client.hex" download="uno.client.hex">this link</a> to download the latest version of uno.js client. You will get the  compiled Arduino sketch (HEX file) and you have to install it using a small tool like <a href="https://www.hobbytronics.co.uk/arduino-xloader" target="_blank">XLoader</a>. Otherwise you can download sketch (INO file) and compile and upload using Arduino IDE.
+        </p>
+        <p>
+            Once you have succesfully installed the client application, there is no requirement of installing anything to your Arduino microcontroller otherwise if you change your uno.js version.
+        </p>
+        <h1>Installng the Client Using Arduino IDE</h1>
+        <p>
+            If you are interested in modifying the client application before uploading to your microcontroller, You can download the sketch file and the required libraries from <a href="../../dist/uno.client.zip" download="uno.client.zip">here</a>. Extract the ZIP file and remember to include all the required libraries in your Arduino program files.
+        </p>
+        <pre><code class="language-path">C:\Program Files (x86)\Arduino\libraries</code></pre>
+        <p>
+            Be careful when you modify the client program and make sure it will associate with your uno.js front-end script even after the modifications.
+        </p>
+        <h1>Modification Instructions</h1>
+        <p>
+            If you need to remove some of features from the client sketch file for clear up some space in your microcontroller, you can follow the uno.js category codes and method codes. You can remove all the methods that related to the method or the category from the sketch.
+        </p>
+<pre><code class="language-path">CAT_CMMN 201 // built-in methods
+
+    UJS_CLNT 0 // UNO.js client version
+    PIN_MODE 1 // pinMode()
+    PIN_STAT 2 // digitalRead(), analogRead()
+    DT_WRITE 3 // digitalWrite()
+    AL_WRITE 4 // analogWrite()
+    DLY_MLSC 5 // delay()
+    DLY_MRSC 6 // delayMicroseconds()
+    TIM_MLSC 7 // millis()
+    TIM_MRSC 8 // micros()
+
+CAT_SNSR 202 // sensors
+
+    USS_READ 0  // ultrasonic sensor read()
+    BPS_BEGN 10 // bps init()
+    BPS_READ 11 // bps read()
+
+CAT_MODS 203 // modules
+
+    SVR_ATCH 0  // servo.attach()
+    SVR_WRTE 1  // servo.write()
+    ACL_POWR 10 // adxl.powerOn()
+    ACL_READ 11 // adxl.readAccel()
+    LCD_BEGN 20 // lcd.begin()
+    LCD_CRSR 21 // lcd.setCursor()
+    LCD_PRNT 22 // lcd.print()
+    LCD_CLER 23 // lcd.clear()</code></pre>
+    </div>
+    <script src="../assets/libraries/prism.js"></script>
+</body>
+</html>
