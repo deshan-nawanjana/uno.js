@@ -83,7 +83,7 @@ window.addEventListener('click', blink)</code></pre>
         const init = async function() {
             await uno.init()
             await uno.pinMode(13, OUTPUT)
-            loop()
+            await loop()
         }
 
         const loop = async function() {
@@ -91,7 +91,7 @@ window.addEventListener('click', blink)</code></pre>
             await uno.delay(500)
             await uno.digitalWrite(13, LOW)
             await uno.delay(500)
-            loop()
+            await loop()
         }
 
         const stop = async function() {

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../index.css">
+    <link rel="stylesheet" href="../assets/libraries/prism.css">
+    <script src="../../dist/uno.min.js"></script>
+</head>
+<body class="center">
+    <div class="page">
+        <h1>Accelerometer Module</h1>
+        <p>
+            Using accelerometer module, you can determine the three-axis acceleration. Here uno.js uses ADXL345 library. Therefore you need to connect accelerometer to your microcontroller as follows.
+        </p>
+<pre><code class="language-path">ACC(VCC) = ACC(CS) = 3V3
+ACC(GND) = GND
+ACC(SDA) = PIN(A4)
+ACC(SCL) = PIN(A5)</code></pre>
+        <p>
+            Click the start button and see the accelerometer readings.
+        </p>
+        <div class="example"></div>
+        <p>
+            Here you can see the simple code how to read accelerometer values using uno.js. You cal create the accelerometer using UNO.Accelerometer() by providing previously created controller as the first parameter. And using powerOn() function you can turn on the accelerometer and readAccel() function will return the output as an object, contains { x, y, z } as axes values.
+        </p>
+<pre><code class="language-js">// create controller
+const uno = new UNO.Controller()
+// create accelerometer
+const acc = new UNO.Accelerometer(uno)
+
+const init = async function() {
+    // start controller
+    await uno.init()
+    // power on module
+    await acc.powerOn()
+    // start loop
+    loop()
+}
+
+const loop = async function() {
+    // read x, y, z axis
+    const data = await acc.readAccel()
+    // display values
+    console.log(data)
+    // next round
+    loop()
+}
+
+// click on window to start
+window.addEventListener('click', init)</code></pre>
+    </div>
+    <script src="../assets/libraries/prism.js"></script>
+    <script>
+        const uno = new UNO.Controller()
+        const acc = new UNO.Accelerometer(uno)
+        const grp = new UNO.GraphView('Accelerometer Readings', 3, -240, 240)
+
+        grp.update({ 'X' : 0, 'Y' : 0, 'Z' : 0 })
+
+        const init = async function() {
+            await uno.init()
+            await acc.powerOn()
+            loop()
+        }
+
+        const loop = async function() {
+            const data = await acc.readAccel()
+            grp.update({ 'X' : data.x, 'Y' : data.y, 'Z' : data.z })
+            loop()
+        }
+
+        const stop = async function() {
+            await uno.stop()
+        }
+
+        const btn = new UNO.StartButton(uno, init, stop)
+
+        document.querySelector('.example').appendChild(btn.element)
+
+        document.querySelector('.example').appendChild(grp.element)
+    </script>
+</body>
+</html>

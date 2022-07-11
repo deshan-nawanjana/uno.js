@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../index.css">
+    <link rel="stylesheet" href="../assets/libraries/prism.css">
+    <script src="../../dist/uno.min.js"></script>
+</head>
+<body class="center">
+    <div class="page">
+        <h1>Joystick Module</h1>
+        <p>
+            Most of the game controllers have this kind of components to make the gameplay easy and grate with experiance. Using joystick module, you and identify X and Y angle of the joy stick and also whether user is being pressing the stick middle button. Look at the following simple setup.
+        </p>
+<pre><code class="language-path">JST(GND) = GND
+JST(VCC) = 5V
+JST(VRX) = PIN(A0)
+JST(VRY) = PIN(A1)
+JST(SW) = PIN(2)</code></pre>
+        <p>
+            We will read the angles as analog values and button as a digital value. Click the start button and see the joystick module readings.
+        </p>
+        <div class="example"></div>
+        <p>
+            In this example, We had to use update() function due to no other function that contact the controller while looping. Therefore, update() function will request the pin read values (both analog and digital) and display them as result.
+        </p>
+<pre><code class="language-js">// create controller
+const uno = new UNO.Controller()
+
+// define axes pins and switch pin
+const PIN_AX = 0
+const PIN_AY = 1
+const PIN_SW = 2
+
+const init = async function() {
+    // start controller
+    await uno.init()
+    // set pin mode for switch pin
+    await uno.pinMode(PIN_SW, INPUT_PULLUP)
+    // start loop
+    loop()
+}
+
+const loop = async function() {
+    // read pin values
+    const x = uno.analogRead(PIN_AX)
+    const y = uno.analogRead(PIN_AY)
+    const s = uno.digitalRead(PIN_SW)
+    // display outputs
+    console.log(x, y, s)
+    // update uno state
+    await uno.update()
+    // loop again
+    loop()
+}
+
+// click on window to start
+window.addEventListener('click', init)</code></pre>
+    </div>
+    <script src="../assets/libraries/prism.js"></script>
+    <script>
+        const uno = new UNO.Controller()
+        const grp = new UNO.GraphView('Axes Values', 2, 0, 1023)
+        const sta = new UNO.StateView('Button Pressed State', 'NOT PRESSED', 0)
+
+        const PIN_AX = 0
+        const PIN_AY = 1
+        const PIN_SW = 2
+
+        const init = async function() {
+            await uno.init()
+            await uno.pinMode(PIN_SW, INPUT_PULLUP)
+            loop()
+        }
+
+        const loop = async function() {
+            const x = uno.analogRead(PIN_AX)
+            const y = uno.analogRead(PIN_AY)
+            const s = uno.digitalRead(PIN_SW)
+            grp.update({ 'X' : x, 'Y' : y })
+            sta.update(s ? 'NOT PRESSED' : 'PRESSED', 1 - s)
+            await uno.update()
+            loop()
+        }
+
+        const stop = async function() {
+            await uno.stop()
+        }
+
+        const btn = new UNO.StartButton(uno, init, stop)
+
+        document.querySelector('.example').appendChild(btn.element)
+
+        document.querySelector('.example').appendChild(grp.element)
+
+        document.querySelector('.example').appendChild(sta.element)
+    </script>
+</body>
+</html>

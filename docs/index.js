@@ -16,19 +16,22 @@ docs['Modules'] = {
     'Accelerometer' : 'modules/accelerometer.html',
     'Liquid Crystal Display' : 'modules/liquid_crystal_display.html',
     'Servo Motor' : 'modules/servo_motor.html',
-    'Joystick Module' : 'modules/joystick_module.html',
-    'Buzzer Module' : 'modules/buzzer_module.html'
+    'Joystick Module' : 'modules/joystick_module.html'
 }
 
 docs['Sensors'] = {
     'Ultrasonic Sensor' : 'sensors/ultrasonic_sensor.html',
     'IR Sensor' : 'sensors/ir_sensor.html',
     'Microphone Sensor' : 'sensors/microphone_sensor.html',
+    'Barometric Pressure Sensor' : 'sensors/barometric_pressure_sensor.html',
     'Flame Detection Sensor' : 'sensors/flame_detection_sensor.html',
     'Smoke Detection Sensor' : 'sensors/smoke_detection_sensor.html',
     'PIR Sensor' : 'sensors/pir_sensor.html',
-    'Hall Effect Sensor' : 'sensors/hall_effect_sensor.html',
-    'Barometric Pressure Sensor' : 'sensors/barometric_pressure_sensor.html'
+    'Hall Effect Sensor' : 'sensors/hall_effect_sensor.html'
+}
+
+docs['Tools'] = {
+    'Uploader' : 'tools/uploader.html'
 }
 
 docs['Utils'] = {
@@ -37,7 +40,8 @@ docs['Utils'] = {
     'Serial Monitor' : 'utils/serial_monitor.html',
     'Serial Monitor' : 'utils/serial_monitor.html',
     'State View' : 'utils/state_view.html',
-    'Graph View' : 'utils/graph_view.html'
+    'Graph View' : 'utils/graph_view.html',
+    'Upload Button' : 'utils/upload_button.html'
 }
 
 window.addEventListener('load', () => {

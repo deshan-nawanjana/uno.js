@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../index.css">
+    <link rel="stylesheet" href="../assets/libraries/prism.css">
+    <script src="../../dist/uno.min.js"></script>
+</head>
+<body class="center">
+    <div class="page">
+        <h1>Servo Motor</h1>
+        <p>
+            Servo Motor is a special motor category that you can rotate it by a specific angle. You just have to connect three pins to the controller to begin.
+        </p>
+<pre><code class="language-path">SVR(VCC) = 5V
+SVR(GND) = GND
+SVR(IN) = PIN(10)</code></pre>
+        <p>
+            Connect the servo motor VCC and Ground to the controller voltage supply pins and connect input signal to PIN 4.
+        </p>
+        <div class="example"></div>
+        <p>
+            You can create a servo motor by UNO.ServoMotor(uno, 4) by specifying the controller and attaing pin. After that attach() function will init the motor and it will be ready to take instructions from the controller. You can use write(ANGLE) function to rotate the motor by providing an angle between 0 and 180.
+        </p>
+        <p>
+            Because of the for loop in the example motor will rotate 0 to 180 degrees 10 by 10. and will be stoped for 100 milliseconds every time after a rotation because of the delay() function.
+        </p>
+<pre><code class="language-js">// create controller
+const uno = new UNO.Controller()
+// create motor with attached pin 4
+const svr = new UNO.ServoMotor(uno, 4)
+
+const init = async function() {
+    // start controller
+    await uno.init()
+    // attach motor
+    await svr.attach()
+    // start loop
+    loop()
+}
+
+const loop = async function() {
+    // for loop angle
+    for(let i = 0; i < 181; i += 10) {
+        // write angle to motor
+        await svr.write(i)
+        // delay 100 milliseconds
+        await uno.delay(100)
+    }
+    // loop again
+    loop()
+}
+
+// click on window to start
+window.addEventListener('click', init)</code></pre>
+    </div>
+    <script src="../assets/libraries/prism.js"></script>
+    <script>
+        const uno = new UNO.Controller()
+        const sta = new UNO.StateView('Servo Motor Angle', '0°', 2)
+        const svr = new UNO.ServoMotor(uno, 4)
+
+        const init = async function() {
+            await uno.init()
+            sta.show()
+            await svr.attach()
+            loop()
+        }
+
+        const loop = async function() {
+            for(let i = 0; i < 181; i += 10) {
+                await svr.write(i)
+                sta.update(i + '°', 2)
+                await uno.delay(100)
+            }
+            loop()
+        }
+
+        const stop = async function() {
+            await uno.stop()
+            sta.hide()
+        }
+
+        const btn = new UNO.StartButton(uno, init, stop)
+
+        document.querySelector('.example').appendChild(btn.element)
+
+        document.querySelector('.example').appendChild(sta.element)
+    </script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../index.css">
+    <link rel="stylesheet" href="../assets/libraries/prism.css">
+    <script src="../../dist/uno.min.js"></script>
+</head>
+<body class="center">
+    <div class="page">
+        <h1>Microphone Sensor</h1>
+        <p>
+            Microphone sensor can determine the sound and input as a voltage to the controller.
+        </p>
+<pre><code class="language-path">IRS(VCC) = 5V
+IRS(GND) = GND
+IRS(OUT) = PIN(A0)</code></pre>
+        <p>
+            Connect the microphone to the controller and press the start button. Make sure you have adjust microphone sensitivity by its potentiometer.
+        </p>
+        <div class="example"></div>
+        <p>
+            Taking the output of the microcontroller as an anlog value and do the selection is shown in the example.
+        </p>
+<pre><code class="language-js">// create controller
+const uno = new UNO.Controller()
+
+const init = async function() {
+    // start controller
+    await uno.init()
+    // start loop
+    loop()
+}
+
+const loop = async function() {
+    // check analog value from the sensor
+    if(uno.analogRead(0) > 300) {
+        // display state
+        console.log('SOUND DETECTED')
+    } else {
+        // display state
+        console.log('NO SOUND DETECTED')
+    }
+    // update uno state
+    await uno.update()
+    // loop again
+    loop()
+}
+
+// click on window to start
+window.addEventListener('click', init)</code></pre>
+    </div>
+    <script src="../assets/libraries/prism.js"></script>
+    <script>
+        const uno = new UNO.Controller()
+        const sta = new UNO.StateView('Microphone Detection', 'NO SOUND DETECTED', 0)
+        const grp = new UNO.GraphView('Analog Read', 1, -50, 700)
+
+        const init = async function() {
+            await uno.init()
+            loop()
+        }
+
+        const loop = async function() {
+            grp.update({ 'A0' : uno.analogRead(0) })
+            if(uno.analogRead(0) > 300) {
+                sta.update('SOUND DETECTED', 1)
+            } else {
+                sta.update('NO SOUND DETECTED', 0)
+            }
+            await uno.update()
+            loop()
+        }
+
+        const stop = async function() {
+            await uno.stop()
+        }
+
+        const btn = new UNO.StartButton(uno, init, stop)
+
+        document.querySelector('.example').appendChild(btn.element)
+
+        document.querySelector('.example').appendChild(grp.element)
+
+        document.querySelector('.example').appendChild(sta.element)
+    </script>
+</body>
+</html>

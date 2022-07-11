@@ -6,19 +6,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../index.css">
     <link rel="stylesheet" href="../assets/libraries/prism.css">
+    <script src="../../dist/uno.min.js"></script>
 </head>
 <body class="center">
     <div class="page">
         <h1>Arduino Client Program of uno.js</h1>
         <p>
-            The connection between web browser and the microcontroller happens due to the uno.js client application. It's a small Arduino program that has all the methods to read and execute commands from the serial port. Use <a href="../../dist/uno.client.hex" download="uno.client.hex">this link</a> to download the latest version of uno.js client. You will get the  compiled Arduino sketch (HEX file) and you have to install it using a small tool like <a href="https://www.hobbytronics.co.uk/arduino-xloader" target="_blank">XLoader</a>. Otherwise you can download sketch (INO file) and compile and upload using Arduino IDE.
+            The connection between web browser and the microcontroller happens due to the uno.js client application. It's a small Arduino program that has all the methods to read and execute commands from the serial port. uno.js library provides you a feature that you can upload this client program even through web platform. Please connect your controller to your PC and select the board model then press the upload client button. After selecting the USB device, installation will start and will be completed within few seconds. To use this feature for our developments, See the uno.js Uploader() section.
         </p>
+        <div class="example"></div>
         <p>
             Once you have succesfully installed the client application, there is no requirement of installing anything to your Arduino microcontroller otherwise if you change your uno.js version.
         </p>
-        <h1>Installng the Client Using Arduino IDE</h1>
+        <h1>Manual Installation</h1>
         <p>
-            If you are interested in modifying the client application before uploading to your microcontroller, You can download the sketch file and the required libraries from <a href="../../dist/uno.client.zip" download="uno.client.zip">here</a>. Extract the ZIP file and remember to include all the required libraries in your Arduino program files.
+            What you upload here is a compiled version of your sketch that known as Intel HEX files. Usually Arduino IDE generates this kind of HEX file when you press upload and flashes that file into your controller. Use <a href="../../dist/client_hex/" target="_blank">this link</a> to view all the HEX files for uno.js client. To install this file mannually, you have to use a small tool like <a href="https://www.hobbytronics.co.uk/arduino-xloader" target="_blank">XLoader</a>.
+        </p>
+        <h1>Install Using Arduino IDE</h1>
+        <p>
+            If you are interested in modifying the client application before uploading to your microcontroller, you can download the sketch file and the required libraries from <a href="../../client/" target="_blank">here</a>. Download all the files and remember to include the required libraries in your Arduino program files.
         </p>
         <pre><code class="language-path">C:\Program Files (x86)\Arduino\libraries</code></pre>
         <p>
@@ -57,6 +63,16 @@ CAT_MODS 203 // modules
     LCD_PRNT 22 // lcd.print()
     LCD_CLER 23 // lcd.clear()</code></pre>
     </div>
+    <script>
+        const dir = '../../dist/client_hex/'
+        const upd = new UNO.UploadButton(new UNO.Uploader, {
+            'Arduino Uno'  : { board : 'uno',  file : dir + 'arduino_uno.hex' },
+            'Arduino Mega' : { board : 'mega', file : dir + 'arduino_mega.hex' },
+            'Arduino Nano' : { board : 'nano', file : dir + 'arduino_nano.hex' }
+        })
+
+        document.querySelector('.example').appendChild(upd.element)
+    </script>
     <script src="../assets/libraries/prism.js"></script>
 </body>
 </html>

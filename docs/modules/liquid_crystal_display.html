@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../index.css">
+    <link rel="stylesheet" href="../assets/libraries/prism.css">
+    <script src="../../dist/uno.min.js"></script>
+</head>
+<body class="center">
+    <div class="page">
+        <h1>Liquid Crystal Display</h1>
+        <p>
+            When it comes to displaying text and symbols in Arduino, Liquid Crystal Display takes the first place. uno.js currently provides you features to connect LCD using 12 pins. Therefore you have to connect your LCD to exact following pins. To balance the contrast you need a potentiometer as well.
+        </p>
+<pre><code class="language-path">LCD(VSS) = GND
+LCD(VDD) = 5V
+LCD(V0) = POT(WP)
+LCD(RS) = PIN(7)
+LCD(RW) = GND
+LCD(D4) = PIN(9)
+LCD(D5) = PIN(10)
+LCD(D6) = PIN(11)
+LCD(D7) = PIN(12)
+LCD(A) = 5V
+LCD(K) = GND
+LCD(E) = PIN(8)
+POT(T1) = 5V
+POT(T2) = GND</code></pre>
+        <p>
+            Connect your liquid crystal display and the potentiometer to the microcontroller correctly and press the start button.
+        </p>
+        <div class="example"></div>
+        <p>
+            You can create the LCD using UNO.LiquidCrystalDisplay() and start up using begin(WIDTH, HEIGHT) function providing letter block sizes as parameters. The setCursor(X, Y) function let you to focus on block where you need to start displaying text. And use print(TEXT) function to display.
+        </p>
+<pre><code class="language-js">// create controller
+const uno = new UNO.Controller()
+// create liquid crystal display
+const lcd = new UNO.LiquidCrystalDisplay(uno)
+
+const init = async function() {
+    // start controller
+    await uno.init()
+    // start lcd
+    await lcd.begin(16, 2)
+    // start loop
+    loop()
+}
+
+const loop = async function() {
+    // set cursor position
+    await lcd.setCursor(0, 0)
+    // text to print
+    const text = new Date().toLocaleTimeString()
+    // print on lcd
+    await lcd.print(text)
+    // next round
+    loop()
+}
+
+// click on window to start
+window.addEventListener('click', init)</code></pre>
+    </div>
+    <script src="../assets/libraries/prism.js"></script>
+    <script>
+        const uno = new UNO.Controller()
+        const sta = new UNO.StateView('Text Displaying', '', 1)
+        const lcd = new UNO.LiquidCrystalDisplay(uno)
+
+        sta.update('NO_TEXT', 1)
+
+        const init = async function() {
+            await uno.init()
+            await lcd.begin(16, 2)
+            loop()
+        }
+
+        const loop = async function() {
+            await lcd.setCursor(0, 0)
+            const text = new Date().toLocaleTimeString()
+            await lcd.print(text)
+            sta.update(text, 1)
+            loop()
+        }
+
+        const stop = async function() {
+            await uno.stop()
+        }
+
+        const btn = new UNO.StartButton(uno, init, stop)
+
+        document.querySelector('.example').appendChild(btn.element)
+
+        document.querySelector('.example').appendChild(sta.element)
+    </script>
+</body>
+</html>
