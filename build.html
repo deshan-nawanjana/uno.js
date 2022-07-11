@@ -1,0 +1,113 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="./docs/assets/images/unojs_icon.png" type="images/png">
+    <script src="./src/libraries/Uglify.js"></script>
+    <title>uno.js - Distribution Builder</title>
+    <style>
+        textarea {
+            width: 100vw;
+            height: 100vh;
+            outline: none;
+            resize: none;
+            padding: 10px;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            background-color: #111;
+            overflow-x: hidden;
+            color: #FFF5;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+    <textarea readonly>Please wait...</textarea>
+    <script>
+        // get textarea element
+        const element = document.querySelector('textarea')
+        // file from src folder
+        const files = {
+            js : [
+                './src/UNO.js',
+                './src/Helpers.js',
+                './src/Controller.js',
+                './src/modules/Accelerometer.js',
+                './src/modules/Buzzer.js',
+                './src/modules/LiquidCrystalDisplay.js',
+                './src/modules/ServoMotor.js',
+                './src/sensors/BarometricPressureSensor.js',
+                './src/sensors/UltrasonicSensor.js',
+                './src/utils/GraphView.js',
+                './src/utils/SerialMonitor.js',
+                './src/utils/StartButton.js',
+                './src/utils/StateView.js',
+                './src/utils/VoltageMonitor.js',
+                './src/tools/Uploader.js',
+                './src/utils/UploadButton.js'
+            ],
+            lib : [
+                './src/libraries/AvrgirlArduino.js'
+            ],
+            css : [
+                './src/utils/GraphView.css',
+                './src/utils/SerialMonitor.css',
+                './src/utils/StartButton.css',
+                './src/utils/StateView.css',
+                './src/utils/VoltageMonitor.css',
+                './src/utils/UploadButton.css'
+            ]
+        }
+        // compact method to get files array content
+        const compact = async function(array) {
+            let out = ''
+            // for each file
+            for(let i = 0; i < array.length; i++) {
+                // get response
+                const resp = await fetch(array[i])
+                // collect string result
+                out += '\n' + await resp.text()
+            }
+            // return out
+            return out
+        }
+        // eval css method to add css script wise
+        const evalCSS = function(text) {
+            return `
+                (function abc() {
+                    const UNO_CSS = document.createElement('style');
+                    UNO_CSS.innerHTML = \`${text}\`;
+                    if(document.head) { document.head.appendChild(UNO_CSS) }
+                    else if(document.body) { document.body.appendChild(UNO_CSS) }
+                    else { document.documentElement.append(UNO_CSS) } }())
+            `
+        }
+        // replace method to replace all matches
+        const replace = function(text) {
+            while(text.indexOf('\n') > -1) { text = text.replace('\n', '') }
+            while(text.indexOf('\r') > -1) { text = text.replace('\r', '') }
+            while(text.indexOf('  ') > -1) { text = text.replace('  ', ' ') }
+            return text
+        }
+        // build method to start
+        const build = async function() {
+            // final string
+            let code = ''
+            // source files
+            code += await minify(await compact(files.js)).code
+            // library files
+            code += await compact(files.lib)
+            // style files
+            code += evalCSS(await compact(files.css))
+
+            element.value = replace(code)
+        }
+        // element select event
+        element.addEventListener('click', () => element.select())
+        // start build when load
+        window.addEventListener('load', build)
+    </script>
+</body>
+</html>
