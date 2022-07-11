@@ -8,17 +8,18 @@
 #define VER_CLNT 0
 
 #define BLTN 202 // built-in
-#define PIN_MODE 0
-#define DT_WRITE 1
-#define AL_WRITE 2
-#define DLY_MLSC 3
-#define DLY_MRSC 4
-#define TIM_MLSC 5
-#define TIM_MRSC 6
-#define ADV_TONE 7
-#define ADV_NOTN 8
-#define ADV_PLSI 9
-#define ADV_PLSL 10
+#define PIN_STAT 0
+#define PIN_MODE 1
+#define DT_WRITE 2
+#define AL_WRITE 3
+#define DLY_MLSC 4
+#define DLY_MRSC 5
+#define TIM_MLSC 6
+#define TIM_MRSC 7
+#define ADV_TONE 8
+#define ADV_NOTN 9
+#define ADV_PLSI 10
+#define ADV_PLSL 11
 
 #define SN_1 212 // sensors pack #1
 #define USS_READ 0
@@ -76,6 +77,7 @@ void loop() {
   if(typ == UNJS) {
     if(mtd == VER_CLNT) { VER_CLNT_(); }
   } else if(typ == BLTN) {
+    if(mtd == PIN_STAT) { PIN_STAT_(); } else
     if(mtd == PIN_MODE) { PIN_MODE_(); } else
     if(mtd == DT_WRITE) { DT_WRITE_(); } else
     if(mtd == AL_WRITE) { AL_WRITE_(); } else
@@ -171,6 +173,10 @@ void VER_CLNT_() {
   Serial.write(2);
   Serial.write(1);
   Serial.write(22);
+}
+
+void PIN_STAT_() {
+  PIN_STATE();
 }
 
 void PIN_MODE_() {

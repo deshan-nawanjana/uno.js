@@ -30,6 +30,7 @@ UNO.Controller = class {
                                 // set state flags
                                 state.runs = true
                                 state.wait = false
+                                send.port = port
                                 // init completed
                                 resolve()
                             }, reject)
@@ -200,6 +201,10 @@ UNO.Controller = class {
             }).catch(reject)
         }
 
+        this.update = async function() {
+            return send('BLTN', 'PIN_STAT')
+        }
+
         this.pinMode = async function() {
             const data = HLP.keyGroup(arguments, ['OUTPUT', 'INPUT', 'INPUT_PULLUP'])
             return send('BLTN', 'PIN_MODE', data)
@@ -220,7 +225,7 @@ UNO.Controller = class {
         }
 
         this.analogRead = pin => {
-            return state.pins.analog[pin]
+            return parseInt(state.pins.analog[pin] * 5.115)
         }
 
         this.delay = async function(time) {
@@ -270,6 +275,7 @@ UNO.Controller = class {
                 if(state.runs) {
                     stop.pending = true
                     stop.resolve = resolve
+                    busy = false
                 } else {
                     resolve()
                 }

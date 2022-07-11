@@ -20,17 +20,18 @@ window._UNO_.MSG = {
     // built-in
     BLTN : {
         CODE : 202,
-        PIN_MODE : 0,   // pinMode()
-        DT_WRITE : 1,   // digitalWrite()
-        AL_WRITE : 2,   // analogWrite()
-        DLY_MLSC : 3,   // delay()
-        DLY_MRSC : 4,   // delayMicroseconds()
-        TIM_MLSC : 5,   // millis()
-        TIM_MRSC : 6,   // micros()
-        ADV_TONE : 7,   // tone()
-        ADV_NOTN : 8,   // noTone()
-        ADV_PLSI : 9,   // pulseIn()
-        ADV_PLSL : 10   // pulseInLong()
+        PIN_STAT : 0,   // pin state for update()
+        PIN_MODE : 1,   // pinMode()
+        DT_WRITE : 2,   // digitalWrite()
+        AL_WRITE : 3,   // analogWrite()
+        DLY_MLSC : 4,   // delay()
+        DLY_MRSC : 5,   // delayMicroseconds()
+        TIM_MLSC : 6,   // millis()
+        TIM_MRSC : 7,   // micros()
+        ADV_TONE : 8,   // tone()
+        ADV_NOTN : 9,   // noTone()
+        ADV_PLSI : 10,  // pulseIn()
+        ADV_PLSL : 11   // pulseInLong()
     },
     // sensors pack #1
     SN_1 : {
