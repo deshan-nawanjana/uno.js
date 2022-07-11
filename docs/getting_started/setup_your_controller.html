@@ -34,28 +34,33 @@
         <p>
             If you need to remove some of features from the client sketch file for clear up some space in your microcontroller, you can follow the uno.js category codes and method codes. You can remove all the methods that related to the method or the category from the sketch.
         </p>
-<pre><code class="language-path">CAT_CMMN 201 // built-in methods
+<pre><code class="language-path">UNJS 201 // uno.js methods
+    VER_CLNT 0 // client version
 
-    UJS_CLNT 0 // UNO.js client version
-    PIN_MODE 1 // pinMode()
-    PIN_STAT 2 // digitalRead(), analogRead()
-    DT_WRITE 3 // digitalWrite()
-    AL_WRITE 4 // analogWrite()
-    DLY_MLSC 5 // delay()
-    DLY_MRSC 6 // delayMicroseconds()
-    TIM_MLSC 7 // millis()
-    TIM_MRSC 8 // micros()
+BLTN 202 // built-in methods
+    PIN_STAT 0  // pin state for update()
+    PIN_MODE 1  // pinMode()
+    DT_WRITE 2  // digitalWrite()
+    AL_WRITE 3  // analogWrite()
+    DLY_MLSC 4  // delay()
+    DLY_MRSC 5  // delayMicroseconds()
+    TIM_MLSC 6  // millis()
+    TIM_MRSC 7  // micros()
+    ADV_TONE 8  // tone()
+    ADV_NOTN 9  // noTone()
+    ADV_PLSI 10 // pulseIn()
+    ADV_PLSL 11 // pulseInLong()
 
-CAT_SNSR 202 // sensors
+SN_1 212 // sensors pack #1
+    USS_READ 0  // unltrasonic pulseIn()
+    BPS_BEGN 10 // pressure.begin()
+    BPS_READ 11 // pressure.getPressure()
 
-    USS_READ 0  // ultrasonic sensor read()
-    BPS_BEGN 10 // bps init()
-    BPS_READ 11 // bps read()
-
-CAT_MODS 203 // modules
-
-    SVR_ATCH 0  // servo.attach()
-    SVR_WRTE 1  // servo.write()
+MD_1 222 // modules pack #1
+    SVR_ATCH 0  // svr.attach()
+    SVR_WRTE 1  // svr.write()
+    SVR_READ 2  // svr.read()
+    SVR_DTCH 3  // svr.detach()
     ACL_POWR 10 // adxl.powerOn()
     ACL_READ 11 // adxl.readAccel()
     LCD_BEGN 20 // lcd.begin()

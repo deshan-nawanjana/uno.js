@@ -29,22 +29,22 @@ USS(GND) = GND</code></pre>
             Then you can call begin() function for ultrasonic sensor right after initiating the controller. And use readDuration() function to get the time. And you have to devide that time by 2 because that value acctually represents the round time. Then with the speed of a wave in the air, you can simply calculate the distance to wall in front of the sensor.
         </p>
 <pre><code class="language-js">// create controller
-const uno = new UNO.Controller()
+const myBoard = new UNO.Controller()
 // create sensor with trigger pin and echo pin
-const uss = new UNO.UltrasonicSensor(uno, 12, 13)
+const sensor = new UNO.UltrasonicSensor(myBoard, 12, 13)
 
 const init = async function() {
     // start controller
-    await uno.init()
+    await myBoard.init()
     // start sensor
-    await uss.begin()
+    await sensor.begin()
     // start loop
     loop()
 }
 
 const loop = async function() {
     // read duration from sensor
-    const duration = await uss.readDuration()
+    const duration = await sensor.readDuration()
     // calculate distance
     const distance = (duration * 340 * 100 * 0.5) / 1000000
     // display distance

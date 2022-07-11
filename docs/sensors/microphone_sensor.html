@@ -29,14 +29,14 @@ const uno = new UNO.Controller()
 
 const init = async function() {
     // start controller
-    await uno.init()
+    await myBoard.init()
     // start loop
     loop()
 }
 
 const loop = async function() {
     // check analog value from the sensor
-    if(uno.analogRead(0) > 300) {
+    if(myBoard.analogRead(0) > 300) {
         // display state
         console.log('SOUND DETECTED')
     } else {
@@ -44,7 +44,7 @@ const loop = async function() {
         console.log('NO SOUND DETECTED')
     }
     // update uno state
-    await uno.update()
+    await myBoard.update()
     // loop again
     loop()
 }

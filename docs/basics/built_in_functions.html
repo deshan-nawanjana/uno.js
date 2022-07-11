@@ -51,10 +51,9 @@
         <pre><code class="language-js">const volt = myBoard.analogRead(3)</code></pre>
         <h1>Time</h1>
         <p>
-            To deal with the time and stop the process for a movement, you have delay() and delayMicroseconds() functions within uno.js library. Just provide an integer value while using them.
+            To deal with the time and stop the process for a movement, you have the delay() function within uno.js library. Just provide an integer value while using it.
         </p>
-        <pre><code class="language-js">await myBoard.delay(100)
-await myBoard.delayMicroseconds(10)</code></pre>
+        <pre><code class="language-js">await myBoard.delay(100)</code></pre>
         <p>
             Also you can request the driven time of the controller using millis() and micros() functions.
         </p>

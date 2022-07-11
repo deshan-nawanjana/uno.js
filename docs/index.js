@@ -26,8 +26,7 @@ docs['Sensors'] = {
     'Barometric Pressure Sensor' : 'sensors/barometric_pressure_sensor.html',
     'Flame Detection Sensor' : 'sensors/flame_detection_sensor.html',
     'Smoke Detection Sensor' : 'sensors/smoke_detection_sensor.html',
-    'PIR Sensor' : 'sensors/pir_sensor.html',
-    'Hall Effect Sensor' : 'sensors/hall_effect_sensor.html'
+    'PIR Sensor' : 'sensors/pir_sensor.html'
 }
 
 docs['Tools'] = {

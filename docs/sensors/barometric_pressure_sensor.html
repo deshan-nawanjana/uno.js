@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../index.css">
+    <link rel="stylesheet" href="../assets/libraries/prism.css">
+    <script src="../../dist/uno.min.js"></script>
+</head>
+<body class="center">
+    <div class="page">
+        <h1>Barometric Pressure Sensor</h1>
+        <p>
+            Barometric Pressure Sensor is a popular sensor for measuring atmospheric pressure and temperature. To test the sensor, connect its pins as follows.
+        </p>
+<pre><code class="language-path">BMP(VIN) = 3V3
+BMP(GND) = GND
+BMP(SDA) = PIN(A4)
+BMP(SCL) = PIN(A5)</code></pre>
+        <p>
+            Press the start button to see the measurements.
+        </p>
+        <div class="example"></div>
+        <p>
+            You can use UNO.BarometricPressureSensor() to defined the sensor by providing the controller and default altitude. And use read() method to receive the measurements. This measurement contains object information such as { temperature, pressure, relativePressure }
+        </p>
+<pre><code class="language-js">// create controller
+const myBoard = new UNO.Controller()
+// create barometric pressure sensor with default altitude
+const sensor = new UNO.BarometricPressureSensor(myBoard, 35.6)
+
+const init = async function() {
+    // start controller
+    await myBoard.init()
+    // start sensor
+    await sensor.begin()
+    // start loop
+    loop()
+}
+
+const loop = async function() {
+    // read temperature and pressure
+    const data = await sensor.read()
+    // display readings
+    console.log(data)
+    // loop again
+    loop()
+}
+
+// click on window to start
+window.addEventListener('click', init)</code></pre>
+    </div>
+    <script src="../assets/libraries/prism.js"></script>
+    <script>
+        const uno = new UNO.Controller()
+        // create graph view for temperature
+        const grp_1 = new UNO.GraphView('BPS Temperature (C)', 1, 0, 60)
+        // create graph view for pressure
+        const grp_2 = new UNO.GraphView('BPS Pressure (hPa)', 2, 0, 2000)
+        // create barometric pressure sensor
+        const bps = new UNO.BarometricPressureSensor(uno, 35.6)
+
+        const init = async function() {
+            await uno.init()
+            await bps.begin()
+            loop()
+        }
+
+        const loop = async function() {
+            const obj = await bps.read()
+            grp_1.update({
+                'Temp' : obj.temperature
+            })
+            grp_2.update({
+                'Common' : obj.pressure,
+                'Relative' : obj.relativePressure
+            })
+            loop()
+        }
+
+        const stop = async function() {
+            await uno.stop()
+        }
+
+        const btn = new UNO.StartButton(uno, init, stop)
+
+        document.querySelector('.example').appendChild(btn.element)
+
+        document.querySelector('.example').appendChild(grp_1.element)
+
+        document.querySelector('.example').appendChild(grp_2.element)
+    </script>
+</body>
+</html>

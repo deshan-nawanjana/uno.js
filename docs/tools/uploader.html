@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../index.css">
+    <link rel="stylesheet" href="../assets/libraries/prism.css">
+    <script src="../../dist/uno.min.js"></script>
+</head>
+<body class="center">
+    <div class="page">
+        <h1>Uploader for Intel HEX Files</h1>
+        <p>
+            Intel hexadecimal object file format, Intel hex format or Intellec Hex is a file that commonly used for programming microcontrollers, EPROMs, and other types of programmable logic devices and hardware emulators.
+        </p>
+        <p>
+            In Arduino IDE, when we upload a sketch that we programmed to a microcontroller, the hex file of that sketch will be generated in temp files in your computer. That file is the only thing finally needed to upload as the program to microcontroller.
+        </p>
+        <p>
+            uno.js library has an Uploader() that you can upload this kind of hexadecimal files into your microcontroller directly from the web browser. This method relies on <a href="https://github.com/noopkat/avrgirl-arduino" target="_blank">AvrgirlArduino</a> library, that has already included within uno.js library.
+        </p>
+        <p>
+            To use this method create a new Uploader() and use upload() method or uploadFile() method to start uploading. For the upload() method, you have to provide the Arduino board model and hex content. And for the uploadFile() method, you can provide hex file URL as the second input and Uploader will read that file using fetch to get the hex content.
+        </p>
+<pre><code class="language-js">// create uploader
+const uploader = new UNO.Uploader()
+
+// start with user gesture
+document.addEventListener('click', () => {
+    // upload file into Arduino Mega board
+    uploader.uploadFile('mega', 'path/to/file.hex').then(() => {
+        // uploading complete
+    }).catch(() => {
+        // upload error
+    })
+})</code></pre>
+        <p>
+            As microcontroller board model, you can provide one of following code.
+        </p>
+<pre><code class="language-path">uno      - Arduino Uno
+mega     - Arduino Mega
+leonardo - Arduino Leonardo
+micro    - Arduino Micro
+nano     - Arduino Nano
+</code></pre>
+        <p>
+            Uploader() can be combined with UploadButton() in utils to make a small upload gadget easily.
+        </p>
+    </div>
+    <script src="../assets/libraries/prism.js"></script>
+</body>
+</html>
