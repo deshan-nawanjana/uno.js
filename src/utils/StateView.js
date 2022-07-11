@@ -15,11 +15,11 @@ UNO.StateView = class {
 
         const inner = this.element.querySelector('.state-view-inner')
 
-        inner.style.backgroundColor = CLR(colorIndex)
+        inner.style.backgroundColor = _UNO_.CLR(colorIndex)
 
         this.update = (text, colorIndex) => {
             inner.innerHTML = text
-            inner.style.backgroundColor = CLR(colorIndex)
+            inner.style.backgroundColor = _UNO_.CLR(colorIndex)
         }
 
         this.show = () => {

@@ -1,0 +1,100 @@
+.unojs-util-uploader * {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    outline: none;
+    user-select: none;
+}
+
+.unojs-util-uploader {
+    display: flex;
+    opacity: 0.9;
+    width: 336px;
+    margin: 20px;
+}
+
+.unojs-util-uploader:hover {
+    opacity: 1;
+}
+
+.unojs-util-uploader > select {
+    text-align: right;
+    height: 50px;
+    padding: 0px 5px 0px 10px;
+    font-size: 16px;
+    border: 3px solid #00b386;
+    background-color: #222;
+    color: #FFF8;
+}
+
+.unojs-util-uploader > select > option {
+    -webkit-appearance: none;
+    border-radius: 0px;
+}
+
+.unojs-upload-button {
+    background-color: #00b386;
+    width: 120px;
+    text-align: center;
+    line-height: 50px;
+    cursor: pointer;
+    font-size: 18px;
+    color: #FFFE;
+    padding-right: 20px;
+    padding-left: 50px;
+    background-position: 5px 5px;
+    background-repeat: no-repeat;
+    background-size: auto calc(100% - 10px);
+}
+
+.unojs-util-uploader.unojs-upload > div::after {
+    content: 'UPLOAD';
+}
+
+.unojs-util-uploader.unojs-upload > div {
+    background-image: url('data:image/svg+xml,<svg version="1.1" viewBox="0 0 24 24" width="200" height="200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="fill: rgb(255, 255, 255); opacity: 1; transform: rotate(0deg) scale(0.8, 0.8);"><g><path d="M5,20h14v-2H5V20z M5,10h4v6h6v-6h4l-7-7L5,10z"></path></g></svg>');
+}
+
+.unojs-util-uploader.unojs-uploading > div::after {
+    content: 'UPLOADING';
+}
+
+.unojs-util-uploader.unojs-uploading > div {
+    background-image: url("data:image/svg+xml,%3Csvg width='80px' height='80px' xmlns='http://www.w3.org/2000/svg' viewBox='-10 0 100 100' preserveAspectRatio='xMidYMid' class='lds-bars' style=''%3E%3Crect ng-attr-x='%7B%7Bconfig.x1%7D%7D' y='30' ng-attr-width='%7B%7Bconfig.width%7D%7D' height='40' fill='%23ffffff88' x='14' width='12'%3E%3Canimate attributeName='opacity' calcMode='spline' values='1;0.2;1' keyTimes='0;0.5;1' dur='1' keySplines='0.5 0 0.5 1;0.5 0 0.5 1' begin='-0.6s' repeatCount='indefinite'%3E%3C/animate%3E%3C/rect%3E%3Crect ng-attr-x='%7B%7Bconfig.x2%7D%7D' y='30' ng-attr-width='%7B%7Bconfig.width%7D%7D' height='40' fill='%23ffffff88' x='34' width='12'%3E%3Canimate attributeName='opacity' calcMode='spline' values='1;0.2;1' keyTimes='0;0.5;1' dur='1' keySplines='0.5 0 0.5 1;0.5 0 0.5 1' begin='-0.4s' repeatCount='indefinite'%3E%3C/animate%3E%3C/rect%3E%3Crect ng-attr-x='%7B%7Bconfig.x3%7D%7D' y='30' ng-attr-width='%7B%7Bconfig.width%7D%7D' height='40' fill='%23ffffff88' x='54' width='12'%3E%3Canimate attributeName='opacity' calcMode='spline' values='1;0.2;1' keyTimes='0;0.5;1' dur='1' keySplines='0.5 0 0.5 1;0.5 0 0.5 1' begin='-0.2s' repeatCount='indefinite'%3E%3C/animate%3E%3C/rect%3E%3C/svg%3E");
+}
+
+.unojs-util-uploader.serial-error { 
+    width: 200px;
+}
+
+.unojs-util-uploader.serial-error > select {
+    border: 3px solid #ff3333;
+}
+
+.unojs-util-uploader.serial-error > div::after {
+    content: 'ERROR';
+}
+
+.unojs-util-uploader.serial-error > div {
+    background-color: #ff3333;
+    background-image: url('data:image/svg+xml,<svg version="1.1" viewBox="0 0 16 16" width="200" height="200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="fill: rgb(255, 255, 255); opacity: 1; transform: rotate(0deg) scale(0.8, 0.8);"><g><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"></path></g></svg>');
+}
+
+.unojs-util-uploader.unojs-failed > select {
+    border: 3px solid #ff3333;
+}
+
+.unojs-util-uploader.unojs-failed > div::after {
+    content: 'FAILED';
+}
+
+.unojs-util-uploader.unojs-failed > div {
+    background-color: #ff3333;
+    background-image: url('data:image/svg+xml,<svg version="1.1" viewBox="0 0 16 16" width="200" height="200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="fill: rgb(255, 255, 255); opacity: 1; transform: rotate(0deg) scale(0.8, 0.8);"><g><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"></path></g></svg>');
+}
+
+.unojs-util-uploader.unojs-uploaded > div::after {
+    content: 'COMPLETED';
+}
+
+.unojs-util-uploader.unojs-uploaded > div {
+    background-image: url('data:image/svg+xml,<svg version="1.1" viewBox="0 0 16 16" width="200" height="200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="fill: rgb(255, 255, 255); opacity: 1; transform: rotate(0deg) scale(0.8, 0.8);"><g><path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"></path></g></svg>');
+}

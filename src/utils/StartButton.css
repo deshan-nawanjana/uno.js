@@ -3,7 +3,6 @@
     height: 50px;
     background-color: #3366ff;
     border: none;
-    color: #FFF;
     cursor: pointer;
     font-size: 18px;
     line-height: 45px;
@@ -66,4 +65,74 @@
 
 .unojs-util-start-button.stopping::after {
     content: 'STOPPING';
+}
+
+.unojs-util-start-button.error {
+    background-color: #ff3333;
+    background-image: url('data:image/svg+xml,<svg version="1.1" viewBox="0 0 16 16" width="200" height="200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="fill: rgb(255, 255, 255); opacity: 1; transform: rotate(0deg) scale(0.8, 0.8);"><g><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"></path></g></svg>');
+}
+
+.unojs-util-start-button.error::after {
+    content: 'ERROR';
+}
+
+.unojs-error-tray {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    z-index: 99998;
+    background-color: #111E;
+    top: 0px;
+    left: 0px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    user-select: none;
+}
+
+.unojs-error-inner {
+    width: 400px;
+    height: 175px;
+    position: fixed;
+    z-index: 99999;
+    top: calc(50vh - 87.5px);
+    left: calc(50vw - 200px);
+    background-color: #222;
+    box-shadow: 0px 3px 15px rgba(0,0,0,0.1);
+}
+
+.unojs-error-info {
+    padding: 30px 30px 20px 30px;
+    color: #AAA;
+    font-size: 14px;
+    height: 60px;
+    overflow: hidden;
+    text-align: left;
+}
+
+.unojs-error-button {
+    height: 50px;
+    width: 120px;
+    background-color: #3366ff;
+    float: right;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 50px;
+    color: #FFFE;
+    text-align: center;
+    margin-right: 15px;
+    opacity: 0.85;
+    transition: opacity 0.1s;
+}
+
+.unojs-error-button:hover { opacity: 1; }
+.unojs-error-button:active { opacity: 0.8; }
+
+.unojs-error-info > a {
+    text-decoration: none;
+    color: #3377ff;
+}
+
+.unojs-error-info > a:hover {
+    text-decoration: underline;
 }

@@ -69,10 +69,10 @@ UNO.VoltageMonitor = class {
                 // value element
                 const vElm = document.createElement('div')
                 vElm.className = 'value-label'
-                vElm.style.color =  CLR(i)
+                vElm.style.color =  _UNO_.CLR(i)
                 vBox.appendChild(vElm)
                 // draw line
-                ctx.strokeStyle = CLR(i)
+                ctx.strokeStyle = _UNO_.CLR(i)
                 ctx.lineWidth = 0.8
                 ctx.beginPath()
                 ctx.moveTo(0, i * 30 + 15)
@@ -100,7 +100,7 @@ UNO.VoltageMonitor = class {
                 const a = (old[name] ? old[name][i] : 0) / devider
                 const b = (array[i]) / devider
                 // draw line
-                ctx.strokeStyle = CLR(i)
+                ctx.strokeStyle = _UNO_.CLR(i)
                 ctx.beginPath()
                 ctx.moveTo(250, i * 30 + 15 - a)
                 ctx.lineTo(270, i * 30 + 15 - b)

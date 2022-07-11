@@ -39,11 +39,11 @@ UNO.GraphView = class {
             // value element
             const val = document.createElement('div')
             val.className = 'value'
-            val.style.color = CLR(i)
+            val.style.color = _UNO_.CLR(i)
             val.innerHTML = '0'
             values.appendChild(val)
             // draw line
-            ctx.strokeStyle = CLR(i)
+            ctx.strokeStyle = _UNO_.CLR(i)
             ctx.lineWidth = 0.8
             ctx.beginPath()
             ctx.moveTo(0, i * 60 + 30)
@@ -79,7 +79,7 @@ UNO.GraphView = class {
                 const a = ((old[label] !== undefined ? old[label] : 0) - rangeMin) * mul
                 const b = (value - rangeMin) * mul
                 // draw line
-                ctx.strokeStyle = CLR(index)
+                ctx.strokeStyle = _UNO_.CLR(index)
                 ctx.beginPath()
                 ctx.moveTo(w - 20, (index * 60) + (60 - a))
                 ctx.lineTo(w, (index * 60) + (60 - b))

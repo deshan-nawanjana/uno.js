@@ -5,13 +5,19 @@ UNO.StartButton = class {
         // create element
         this.element = document.createElement('button')
 
-        // setup element
-        this.element.className = 'unojs-util unojs-util-start-button start'
-
         // button mode
         let mode = 'start'
 
+        // setup element
+        this.element.className = 'unojs-util unojs-util-start-button start'
+
+        // button click event
         this.element.addEventListener('click', () => {
+            // return if unsupported
+            if(mode === 'error') {
+                _UNO_.HLP.showUnsupported()
+                return
+            }
             // return if busy
             if(mode === 'starting' || mode === 'stopping') { return }
             // select controller state
@@ -59,8 +65,15 @@ UNO.StartButton = class {
             }, 50)
         }
 
-        // start render
-        render()
+
+
+        if("serial" in navigator) {
+            // start render
+            render()
+        } else {
+            this.element.className = 'unojs-util unojs-util-start-button error'
+            mode = 'error'
+        }
 
     }
 

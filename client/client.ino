@@ -1,52 +1,41 @@
 #include <Servo.h>
 #include <Wire.h>
 #include <ADXL345.h>
-#include <LiquidCrystal.h>
 #include <SFE_BMP180.h>
+#include <LiquidCrystal.h>
 
-// =========== 201 - common methods ===========
-#define CAT_CMMN 201
+#define UNJS 201 // uno.js methods
+#define VER_CLNT 0
 
-// signal io
-#define UJS_CLNT 0 // UNO.js client version
-#define PIN_MODE 1 // pinMode()
-#define PIN_STAT 2 // digitalRead(), analogRead()
-#define DT_WRITE 3 // digitalWrite()
-#define AL_WRITE 4 // analogWrite()
+#define BLTN 202 // built-in
+#define PIN_MODE 0
+#define DT_WRITE 1
+#define AL_WRITE 2
+#define DLY_MLSC 3
+#define DLY_MRSC 4
+#define TIM_MLSC 5
+#define TIM_MRSC 6
+#define ADV_TONE 7
+#define ADV_NOTN 8
+#define ADV_PLSI 9
+#define ADV_PLSL 10
 
-// time
-#define DLY_MLSC 5 // delay()
-#define DLY_MRSC 6 // delayMicroseconds()
-#define TIM_MLSC 7 // millis()
-#define TIM_MRSC 8 // micros()
-
-// =========== 202 - sensors methods ===========
-#define CAT_SNSR 202
-
-// unltrasonic sensor
-#define USS_READ 0 // pulse in to read duration
-
-// barometric pressure sensor
+#define SN_1 212 // sensors pack #1
+#define USS_READ 0
 #define BPS_BEGN 10
 #define BPS_READ 11
 
-// =========== 203 - modules methods ===========
-#define CAT_MODS 203
-
-// servor motor
-#define SVR_ATCH 0 // svr.attach()
-#define SVR_WRTE 1 // svr.write()
-
-// accelerometer
-#define ACL_POWR 10 // adxl.powerOn()
-#define ACL_READ 11 // adxl.readAccel()
-
-#define LCD_BEGN 20 // lcd.begin()
-#define LCD_CRSR 21 // lcd.setCursor()
-#define LCD_PRNT 22 // lcd.print()
-#define LCD_CLER 23 // lcd.clear()
-
-// =========== signal identifiers ===========
+#define MD_1 222 // modules pack #1
+#define SVR_ATCH 0
+#define SVR_WRTE 1
+#define SVR_READ 2
+#define SVR_DTCH 3
+#define ACL_POWR 10
+#define ACL_READ 11
+#define LCD_BEGN 20
+#define LCD_CRSR 21
+#define LCD_PRNT 22
+#define LCD_CLER 23
 
 #define NTR 253 // neutral
 #define SPR 254 // separator
@@ -77,169 +66,57 @@ void loop() {
       index++;
     }
   }
-
-  // select category
-  if(bytes[0] == CAT_CMMN) {
-    // common
-    Serial.write(CAT_CMMN);
-    if(bytes[1] == UJS_CLNT) {
-      Serial.write(UJS_CLNT);
-      sendPinStates();
-      Serial.write(SPR);
-      sendJSVersion();
-    } else if(bytes[1] == PIN_STAT) {
-      Serial.write(PIN_STAT);
-      sendPinStates();
-      Serial.write(SPR);
-      sendJSVersion();
-    } else if(bytes[1] == PIN_MODE) {
-      Serial.write(PIN_MODE);
-      setPinModes();
-      sendPinStates();
-    } else if(bytes[1] == DT_WRITE) {
-      Serial.write(DT_WRITE);
-      setDigitalWrite();
-      sendPinStates();
-    } else if(bytes[1] == AL_WRITE) {
-      Serial.write(AL_WRITE);
-      setAnalogWrite();
-      sendPinStates();
-    } else if(bytes[1] == DLY_MLSC) {
-      Serial.write(DLY_MLSC);
-      setDelayMilliseconds();
-      sendPinStates();
-    } else if(bytes[1] == DLY_MRSC) {
-      Serial.write(DLY_MRSC);
-      setDelayMicroseconds();
-      sendPinStates();
-    } else if(bytes[1] == TIM_MLSC) {
-      Serial.write(TIM_MLSC);
-      sendPinStates();
-      Serial.write(SPR);
-      getMillis();
-    } else if(bytes[1] == TIM_MRSC) {
-      Serial.write(TIM_MRSC);
-      sendPinStates();
-      Serial.write(SPR);
-      getMicros();
-    }
-  } else if(bytes[0] == CAT_SNSR) {
-    // sensors
-    Serial.write(CAT_SNSR);
-    if(bytes[1] == USS_READ) {
-      Serial.write(TIM_MRSC);
-      sendPinStates();
-      Serial.write(SPR);
-      getUltrasonicDuration();
-    } else if(bytes[1] == BPS_BEGN) {
-      Serial.write(BPS_BEGN);
-      sendPinStates();
-      Serial.write(SPR);
-      BPSBegin();
-    } else if(bytes[1] == BPS_READ) {
-      Serial.write(BPS_READ);
-      sendPinStates();
-      Serial.write(SPR);
-      BPSRead();
-    }
-  } else if(bytes[0] == CAT_MODS) {
-    // devices
-    Serial.write(CAT_MODS);
-    if(bytes[1] == SVR_ATCH) {
-      Serial.write(SVR_ATCH);
-      sendPinStates();
-      setServoAttach();
-    } else if(bytes[1] == SVR_WRTE) {
-      Serial.write(SVR_WRTE);
-      sendPinStates();
-      setServoWrite();
-    } else if(bytes[1] == ACL_POWR) {
-      Serial.write(ACL_POWR);
-      sendPinStates();
-      accelerometerPowerOn();
-    } else if(bytes[1] == ACL_READ) {
-      Serial.write(ACL_READ);
-      sendPinStates();
-      Serial.write(SPR);
-      accelerometerReadAccel();
-    } else if(bytes[1] == LCD_BEGN) {
-      Serial.write(LCD_BEGN);
-      sendPinStates();
-      Serial.write(SPR);
-      LCDBegin();
-    } else if(bytes[1] == LCD_CRSR) {
-      Serial.write(LCD_CRSR);
-      sendPinStates();
-      Serial.write(SPR);
-      LCDSetCursor();
-    } else if(bytes[1] == LCD_PRNT) {
-      Serial.write(LCD_PRNT);
-      sendPinStates();
-      Serial.write(SPR);
-      LCDPrint();
-    } else if(bytes[1] == LCD_CLER) {
-      Serial.write(LCD_CLER);
-      sendPinStates();
-      Serial.write(SPR);
-      LCDClear();
-    }
+  // get headers
+  const int typ = bytes[0];
+  const int mtd = bytes[1];
+  // write response header
+  Serial.write(typ);
+  Serial.write(mtd);
+  // select message type
+  if(typ == UNJS) {
+    if(mtd == VER_CLNT) { VER_CLNT_(); }
+  } else if(typ == BLTN) {
+    if(mtd == PIN_MODE) { PIN_MODE_(); } else
+    if(mtd == DT_WRITE) { DT_WRITE_(); } else
+    if(mtd == AL_WRITE) { AL_WRITE_(); } else
+    if(mtd == DLY_MLSC) { DLY_MLSC_(); } else
+    if(mtd == DLY_MRSC) { DLY_MRSC_(); } else
+    if(mtd == TIM_MLSC) { TIM_MLSC_(); } else
+    if(mtd == TIM_MRSC) { TIM_MRSC_(); } else
+    if(mtd == ADV_TONE) { ADV_TONE_(); } else
+    if(mtd == ADV_NOTN) { ADV_NOTN_(); }
+  } else if(typ == SN_1) {
+    if(mtd == USS_READ) { USS_READ_(); } else
+    if(mtd == BPS_BEGN) { BPS_BEGN_(); } else
+    if(mtd == BPS_READ) { BPS_READ_(); }
+  } else if(typ == MD_1) {
+    if(mtd == SVR_ATCH) { SVR_ATCH_(); } else
+    if(mtd == SVR_WRTE) { SVR_WRTE_(); } else
+    if(mtd == SVR_READ) { SVR_READ_(); } else
+    if(mtd == SVR_DTCH) { SVR_DTCH_(); } else
+    if(mtd == ACL_POWR) { ACL_POWR_(); } else
+    if(mtd == ACL_READ) { ACL_READ_(); } else
+    
+    if(mtd == LCD_BEGN) { LCD_BEGN_(); } else
+    if(mtd == LCD_CRSR) { LCD_CRSR_(); } else
+    if(mtd == LCD_PRNT) { LCD_PRNT_(); } else
+    if(mtd == LCD_CLER) { LCD_CLER_(); }
   }
-  // write end of message
-  separateEnd();
-}
-
-void separateEnd() {
-    Serial.write(SPR);
-    Serial.write(END);
-}
-
-void sendJSVersion() {
-  // pins state flag
-  Serial.write(1);
-  Serial.write(1);
-  Serial.write(22);
-}
-
-void setPinModes() {
-  for(int i = 0; i < NUM_DIGITAL_PINS - NUM_ANALOG_INPUTS; i++) {
-    if(bytes[i + 2] == 0) { pinMode(i, OUTPUT); }
-    else if(bytes[i + 2] == 1) { pinMode(i, INPUT); }
-    else if(bytes[i + 2] == 2) { pinMode(i, INPUT_PULLUP); }
-  }
-}
-
-void sendPinStates() {
-  // for each digital pin
-  for(int i = 0; i < NUM_DIGITAL_PINS - NUM_ANALOG_INPUTS; i++) {
-    Serial.write(digitalRead(i) == 1);
-  }
-  // separator flag
+  // write response footer
   Serial.write(SPR);
-  // for each analog pin
-  for(int i = 0; i < NUM_ANALOG_INPUTS; i++) {
-    Serial.write(int(analogRead(i) / 5.115));
-  }
+  Serial.write(END);
 }
 
-void setDigitalWrite() {
-  for(int i = 0; i < NUM_DIGITAL_PINS - NUM_ANALOG_INPUTS; i++) {
-    if(bytes[i + 2] == 1) { digitalWrite(i, HIGH); }
-    else if(bytes[i + 2] == 0) { digitalWrite(i, LOW); }
-  }
-}
+// get value variables
+String val_str = "0.00000000000000";
+int val_int = 0;
+float val_flt = 0;
+// get value start index
+int val_idx = 0;
 
-void setAnalogWrite() {
-  for(int i = 0; i < NUM_DIGITAL_PINS - NUM_ANALOG_INPUTS; i++) {
-    if(bytes[i + 2] != NTR) {
-      int val = int(bytes[i + 2] * 1.275);
-      analogWrite(i, val);
-    }
-  }
-}
-
-float getFloat(int index) {
-  // string to collect bytes
-  String out = "0.00000000000000";
+void getValue(int index) {
+  // start flag
+  bool start = false;
   // current byte index
   int cr_i = 2;
   // current value index
@@ -255,58 +132,164 @@ float getFloat(int index) {
       // increase value index
       cr_v++;
     } else if(cr_v == index) {
+      if(start == false) {
+        val_idx = cr_i;
+        start = true;
+      }
       // put in string
-      out[cr_c] = v;
+      val_str[cr_c] = v;
       // increase char index
       cr_c++;
     }
     cr_i++;
   }
   // put end char
-  out[cr_c] = '\0';
-  // return int version
-  return out.toFloat();
+  val_str[cr_c] = '\0';
+  // int version
+  val_int = val_str.toInt();
+  // float version
+  val_flt = val_str.toFloat();
 }
 
-void setDelayMilliseconds() {
-  int value = getFloat(0);
-  delay((int)value);
+void PIN_STATE() {
+  // for each digital pin
+  for(int i = 0; i < NUM_DIGITAL_PINS - NUM_ANALOG_INPUTS; i++) {
+    Serial.write(digitalRead(i) == 1);
+  }
+  // separator flag
+  Serial.write(SPR);
+  // for each analog pin
+  for(int i = 0; i < NUM_ANALOG_INPUTS; i++) {
+    Serial.write(int(analogRead(i) / 5.115));
+  }
+  // separator flag
+  Serial.write(SPR);
 }
 
-void setDelayMicroseconds() {
-  int value = getFloat(0);
-  delayMicroseconds((int)value);
+void VER_CLNT_() {
+  PIN_STATE();
+  Serial.write(2);
+  Serial.write(1);
+  Serial.write(22);
 }
 
-void getMillis() {
-  Serial.print(millis());
+void PIN_MODE_() {
+  int p = 0;
+  for(int i = 2; bytes[i] != END; i++) {
+    if(bytes[i] == SPR) {
+      p += 1;
+    } else {
+      if(p == 0) { pinMode(bytes[i], OUTPUT); } else
+      if(p == 1) { pinMode(bytes[i], INPUT); } else
+      if(p == 2) { pinMode(bytes[i], INPUT_PULLUP); }
+    }
+  }
+  PIN_STATE();
 }
 
-void getMicros() {
-  Serial.print(micros());
+void DT_WRITE_() {
+  int p = 0;
+  for(int i = 2; bytes[i] != END; i++) {
+    if(bytes[i] == SPR) {
+      p += 1;
+    } else {
+      if(p == 0) { pinMode(bytes[i], LOW); } else
+      if(p == 1) { pinMode(bytes[i], HIGH); }
+    }
+  }
+  PIN_STATE();
 }
 
-void getUltrasonicDuration() {
-  int trig = bytes[2];
-  int echo = bytes[3];
-  digitalWrite(trig, LOW);
-  delayMicroseconds(2);
-  digitalWrite(trig, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(trig, LOW);
-  Serial.print(pulseIn(echo, HIGH));
-}
-
-Servo svr_motor;
-
-void setServoAttach() {
-  if(svr_motor.attached() == false) {
-    svr_motor.attach(bytes[2]);
+void AL_WRITE_() {
+  for(int i = 2; bytes[i] != END; i += 3) {
+    analogWrite(bytes[i], int(bytes[i + 1] / 0.7843137254901961));
   }
 }
 
-void setServoWrite() {
-  svr_motor.write(bytes[2]);
+void DLY_MLSC_() {
+  getValue(0);
+  delay(val_int);
+  PIN_STATE();
+}
+
+void DLY_MRSC_() {
+  getValue(0);
+  delayMicroseconds(val_int);
+  PIN_STATE();
+}
+
+void TIM_MLSC_() {
+  PIN_STATE();
+  Serial.print(millis());
+}
+
+void TIM_MRSC_() {
+  PIN_STATE();
+  Serial.print(micros());
+}
+
+void ADV_TONE_() {
+  int pin = bytes[2];
+  getValue(1);
+  int frc = val_int;
+  getValue(2);
+  int dur = val_int;
+  if(bytes[val_idx] != NTR) {
+    tone(pin, frc, dur);
+  } else {
+    tone(pin, frc);
+  }
+  PIN_STATE();
+}
+
+void ADV_NOTN_() {
+  noTone(bytes[2]);
+  PIN_STATE();
+}
+
+Servo svr_arr[4];
+int svr_pin[4] = {-1, -1, -1, -1};
+
+int SVR_FIND_(int pin) {
+  int idx = -1;
+  for(int i = 0; i < 5; i += 1) {
+    if(svr_pin[i] == pin) { idx = i; }
+  }
+  return idx;
+}
+
+void SVR_ATCH_() {
+  for(int i = 0; i < 5; i += 1) {
+    if(svr_pin[i] == -1) {
+      svr_arr[i].attach(bytes[2]);
+      svr_pin[i] = bytes[2];
+      break;
+    }
+  }
+  PIN_STATE();
+}
+
+void SVR_WRTE_() {
+  int idx = SVR_FIND_(bytes[2]);
+  if(idx != -1) { svr_arr[idx].write(bytes[3]); }
+  PIN_STATE();
+}
+
+void SVR_READ_() {
+  int idx = SVR_FIND_(bytes[2]);
+  int val = 0;
+  if(idx != -1) { val = svr_arr[idx].read(); }
+  PIN_STATE();
+  Serial.write(val);
+}
+
+void SVR_DTCH_() {
+  int idx = SVR_FIND_(bytes[2]);
+  if(idx != -1) {
+    svr_arr[idx].detach();
+    svr_pin[idx] = -1;
+  }
+  PIN_STATE();
 }
 
 ADXL345 adxl;
@@ -314,12 +297,14 @@ int adxl_x;
 int adxl_y;
 int adxl_z;
 
-void accelerometerPowerOn() {
+void ACL_POWR_() {
   adxl.powerOn();
+  PIN_STATE();
 }
 
-void accelerometerReadAccel() {
+void ACL_READ_() {
   adxl.readAccel(&adxl_x, &adxl_y, &adxl_z);
+  PIN_STATE();
   Serial.print(adxl_x);
   Serial.write(SPR);
   Serial.print(adxl_y);
@@ -327,40 +312,9 @@ void accelerometerReadAccel() {
   Serial.print(adxl_z);
 }
 
-LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
-
-void LCDBegin() {
-  lcd.begin(bytes[2], bytes[3]);
-}
-
-void LCDSetCursor() {
-  lcd.setCursor(bytes[2], bytes[3]);
-}
-
-void LCDPrint() {
-  // length value
-  int len = 0;
-  // while reach end
-  while(bytes[len + 2] != END) {
-    len++;
-  }
-  // create string
-  char value[len];
-  // for loop
-  for(int i = 0; i < len; i++) {
-    value[i] = bytes[i + 2];
-  }
-  // print on lcd
-  lcd.print(value);
-}
-
-void LCDClear() {
-  lcd.clear();
-}
-
 SFE_BMP180 pressure;
 
-void BPSBegin() {
+void BPS_BEGN_() {
   if(pressure.begin()){
     Serial.write(1);
   } else {
@@ -368,13 +322,15 @@ void BPSBegin() {
   }
 }
 
-void BPSRead() {
+void BPS_READ_() {
+  PIN_STATE();
   // status char
   char status;
   // variables
   double T, P, p0;
   // provided altitude
-  float alt = getFloat(0);
+  getValue(0);
+  float alt = val_flt;
   // check temp status
   status = pressure.startTemperature();
   if(status != 0) {
@@ -423,4 +379,46 @@ void BPSRead() {
 void PrintNeutral() {
   Serial.write(NTR);
   Serial.write(SPR);
+}
+
+void USS_READ_() {
+  digitalWrite(bytes[2], LOW);
+  delayMicroseconds(2);
+  digitalWrite(bytes[2], HIGH);
+  delayMicroseconds(10);
+  digitalWrite(bytes[2], LOW);
+  long duration = pulseIn(bytes[3], HIGH);
+  PIN_STATE();
+  Serial.print(duration);
+}
+
+LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
+
+void LCD_BEGN_() {
+  lcd.begin(bytes[2], bytes[3]);
+}
+
+void LCD_CRSR_() {
+  lcd.setCursor(bytes[2], bytes[3]);
+}
+
+void LCD_PRNT_() {
+  // length value
+  int len = 0;
+  // while reach end
+  while(bytes[len + 2] != END) {
+    len++;
+  }
+  // create string
+  char value[len];
+  // for loop
+  for(int i = 0; i < len; i++) {
+    value[i] = bytes[i + 2];
+  }
+  // print on lcd
+  lcd.print(value);
+}
+
+void LCD_CLER_() {
+  lcd.clear();
 }
