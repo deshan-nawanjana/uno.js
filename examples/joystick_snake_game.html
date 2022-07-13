@@ -1,0 +1,259 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="../docs/assets/images/unojs_icon.png" type="images/png">
+    <script src="../dist/uno.min.js"></script>
+    <title>Joystick Snake Game</title>
+    <style>
+        * {
+            user-select: none;
+            outline: none;
+        }
+
+        body {
+            margin: 0px;
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        body > canvas {
+            position: fixed;
+            top: calc(50vh - 200px);
+            left: calc(50vw - 250px);
+        }
+
+        .unojs-util-start-button {
+            position: fixed;
+            z-index: 2;
+            top: 0px;
+            left: 0px;
+        }
+
+        .unojs-util-graph-view {
+            position: fixed;
+            z-index: 2;
+            top: 0px;
+            left: calc(100vw - 340px);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="500" height="400"></canvas>
+    <script>
+        // get canvas and context
+        const canvas = document.querySelector('#canvas')
+        const context = canvas.getContext('2d')
+        // size of a block
+        const block = 25
+        // canvas dimensions
+        const width = canvas.width
+        const height = canvas.height
+        // get block amounts
+        const blocksX = width / block
+        const blocksY = height / block
+
+        // user selected direction
+        let direction = 'U'
+        // last direction of movement
+        let lastDir = 'U'
+
+        let ateFruit = false
+        let isClashed = false
+        // snake blocks
+        let snake = []
+        // fruit coordinates
+        let fruit = {}
+
+        const updateCanvas = () => {
+            // clear entire canvas
+            context.clearRect(0, 0, width, height)
+            // for each x block
+            for(let x = 0; x < blocksX; x++) {
+                // for each y block
+                for(let y = 0; y < blocksY; y++) {
+                    // select fill color
+                    if(snake.findIndex(k => k.x === x && k.y === y) > -1 || isClashed) {
+                        // draw snake or clashed
+                        context.fillStyle = 'red'
+                    } else if(fruit.x === x && fruit.y === y) {
+                        // fruit
+                        context.fillStyle = 'blue'
+                    } else {
+                        // draw free blocks
+                        context.fillStyle = '#FFF1'
+                    }
+                    // fill block
+                    context.fillRect(x * block + 1, y * block + 1, block - 2, block - 2)
+                }
+            }
+            // check for clash
+            if(isClashed) { resetGame() }
+        }
+
+        const moveSnake = () => {
+            // snake new head coords
+            let headX = null
+            let headY = null
+            // check ate
+            if(snake[0].x === fruit.x && snake[0].y === fruit.y) { ateFruit = true }
+            // head movement
+            if(direction === 'U') {
+                if(snake[0].y > 0) { headY = snake[0].y - 1 } else { headY = blocksY - 1 }
+                headX = snake[0].x
+            } else if(direction === 'L') {
+                if(snake[0].x > 0) { headX = snake[0].x - 1 } else { headX = blocksX - 1 }
+                headY = snake[0].y
+            } else if(direction === 'R') {
+                if(snake[0].x < blocksX - 1) { headX = snake[0].x + 1 } else { headX = 0 }
+                headY = snake[0].y
+            } else if(direction === 'D') {
+                if(snake[0].y < blocksY - 1) { headY = snake[0].y + 1 } else { headY = 0 }
+                headX = snake[0].x
+            }
+            // body movement
+            if(ateFruit) {
+                ateFruit = false
+                relocateFruit()
+            } else { snake.pop() }
+            // update head
+            snake.unshift({ x : headX, y : headY })
+            // update last direction
+            lastDir = direction
+            // check clash
+            checkClash()
+        }
+
+        const checkClash = () => {
+            // clash flag
+            let clash = false
+            // get head coords
+            let headX = snake[0].x
+            let headY = snake[0].y
+            // for each body block
+            for(let i = 1; i < snake.length; i++) {
+                if(snake[i].x === headX && snake[i].y === headY) {
+                    clash = true
+                }
+            }
+            // set clashed if found
+            if(clash) { isClashed = true }
+        }
+
+        // method to get random coords
+        const randomXY = () => {
+            return {
+                x : Math.floor(Math.random() * blocksX),
+                y : Math.floor(Math.random() * blocksY)
+            }
+        }
+
+        const relocateFruit = () => {
+            // new position of fruit
+            let newFruit = null
+            while(newFruit === null) {
+                newFruit = randomXY()
+                // get new coords until find an empty block
+                while(snake.findIndex(k => k.x === newFruit.x && k.y === newFruit.y) > -1) {
+                    newFruit = randomXY()
+                }
+            }
+            // update position of fruit
+            fruit = newFruit
+        }
+
+        const turnSnake = dir => {
+            // prevent vertical turn
+            if(dir === 'U' && lastDir === 'D' || dir === 'D' && lastDir === 'U') { return }
+            // prevent horizontal turn
+            if(dir === 'L' && lastDir === 'R' || dir === 'R' && lastDir === 'L') { return }
+            // update direction
+            direction = dir
+        }
+
+        const resetGame = () => {
+            // reset values
+            isClashed = false
+            direction = 'U'
+            lastDir = 'U'
+            ateFruit = false
+            // relocate fruit
+            relocateFruit()
+            // relocate snake
+            snake = [
+                { x : 10, y : 8 },
+                { x : 10, y : 9 },
+                { x : 10, y : 10 },
+                { x : 10, y : 11 },
+                { x : 10, y : 12 },
+                { x : 10, y : 13 },
+                { x : 10, y : 14 }
+            ]
+        }
+
+        // tick forever
+        setInterval(() => {
+            // only if controller started
+            if(snake.length !== 0) {
+                // update snake and other object positions
+                moveSnake()
+                // draw those positions on canvas
+                updateCanvas()
+            }
+        }, 200)
+
+        // key listener for keyboard play
+        window.addEventListener('keydown', event => {
+            if(event.key === 'w') { turnSnake('U') }
+            if(event.key === 'a') { turnSnake('L') }
+            if(event.key === 'd') { turnSnake('R') }
+            if(event.key === 's') { turnSnake('D') }
+        })
+
+        // create controller
+        const uno = new UNO.Controller()
+        // create graph view
+        const grp = new UNO.GraphView('Joystick Readings', 2)
+
+        // init method
+        const init = async function() {
+            // start controller
+            await uno.init()
+            // start loop
+            loop()
+        }
+
+        // loop method
+        const loop = async function() {
+            // get x and y readings from joystick
+            const x = uno.analogRead(4)
+            const y = uno.analogRead(5)
+            // check value range to turn snake
+            if(x < 20) { turnSnake('L') } else if(x > 1000) { turnSnake('R') }
+            if(y < 20) { turnSnake('U') } else if(y > 1000) { turnSnake('D') }
+            // update to graph
+            grp.update({ 'X' : x, 'Y' : y })
+            // update controller pin state
+            await uno.update()
+            // next round
+            loop()
+        }
+
+        // stop method
+        const stop = async function() {
+            await uno.stop()
+        }
+
+        // create start button
+        const btn = new UNO.StartButton(uno, init, stop)
+
+        // append button and graph elements
+        document.body.appendChild(grp.element)
+        document.body.appendChild(btn.element)
+
+        // reset to new game
+        resetGame()
+    </script>
+</body>
+</html>

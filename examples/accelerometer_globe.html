@@ -1,0 +1,152 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="../docs/assets/images/unojs_icon.png" type="images/png">
+    <script src="../dist/uno.min.js"></script>
+    <script src="./libraries/three/three.min.js"></script>
+    <script src="./libraries/three/GLTFLoader.js"></script>
+    <title>Accelerometer Globe</title>
+    <style>
+        * {
+            user-select: none;
+            outline: none;
+        }
+
+        body {
+            margin: 0px;
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        body > canvas {
+            position: fixed;
+            z-index: 1;
+            top: 0px;
+            left: 0px;
+        }
+
+        .unojs-util-start-button {
+            position: fixed;
+            z-index: 2;
+            top: 0px;
+            left: 0px;
+        }
+
+        .unojs-util-graph-view {
+            position: fixed;
+            z-index: 2;
+            top: 0px;
+            left: calc(100vw - 340px);
+        }
+    </style>
+</head>
+<body>
+    <script>
+        // get window dimension
+        const width = window.innerWidth
+        const height = window.innerHeight
+
+        // create three modules
+        const scene = new THREE.Scene()
+        const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000)
+        const renderer = new THREE.WebGLRenderer({ antialias : true })
+
+        // setup modules
+        camera.position.z = 40
+        renderer.setSize(width, height)
+
+        // on window resize
+        window.addEventListener('resize', () => {
+            // get new window dimension
+            const width = window.innerWidth
+            const height = window.innerHeight
+            // resetup modules
+            renderer.setSize(width, height)
+            camera.aspect = width / height
+            camera.updateProjectionMatrix()
+        })
+
+        // globe model
+        let globe = null
+
+        // load model from loader
+        new THREE.GLTFLoader().load('./assets/globe/scene.gltf', obj => {
+            // store model in global scope
+            globe = obj.scene
+            // init model
+            globe.scale.set(0.0016, 0.0016, 0.0016)
+            globe.rotation.set(0.1, Math.PI * 3.06, 0)
+            // add model to scene
+            scene.add(globe)
+        })
+
+        // render method
+        const render = () => {
+            // if accelerometer values available
+            if(globe && arr.length === 10) {
+                // update model rotation
+                globe.rotation.set(avg('y'), Math.PI * 3.06, avg('x') * -1)
+            }
+            // render scene
+            renderer.render(scene, camera)
+            // request new frame
+            requestAnimationFrame(render)
+        }
+
+        // append canvas
+        document.body.appendChild(renderer.domElement)
+
+        // create uno modules
+        const uno = new UNO.Controller()
+        const acc = new UNO.Accelerometer(uno)
+        const grp = new UNO.GraphView('Accelerometer Readings', 3)
+
+        // init controller and accelerometer
+        const init = async function() {
+            await uno.init()
+            await acc.powerOn()
+            loop()
+        }
+
+        // rotation array from accelerometer
+        const arr = []
+
+        // average method for stable rotation
+        const avg = key => {
+            return (arr.map(k => k[key]).reduce((a, b) => a + b, 0) / arr.length) * -0.003
+        }
+
+        // loop method
+        const loop = async function() {
+            // get rotation data from accelerometer
+            const data = await acc.readAccel()
+            // push to array
+            arr.push(data)
+            // remove overflow older items
+            if(arr.length === 11) { arr.shift() }
+            // delay 20 milliseconds
+            await uno.delay(20)
+            // update graph
+            grp.update(data)
+            loop()
+        }
+
+        // stop method
+        const stop = async function() {
+            uno.stop()
+        }
+
+        // create start button
+        const btn = new UNO.StartButton(uno, init, stop)
+
+        // append button and graph
+        document.body.appendChild(btn.element)
+        document.body.appendChild(grp.element)
+
+        // start three render
+        render()
+    </script>
+</body>
+</html>
