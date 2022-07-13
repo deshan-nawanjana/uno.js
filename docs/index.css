@@ -31,6 +31,7 @@ body {
     background-size: auto 100%;
     background-color: #111;
     padding-left: 60px;
+    cursor: pointer;
 }
 
 .side_panel_title {
@@ -38,6 +39,7 @@ body {
     line-height: 60px;
     color: #FFFA;
     font-size: 14px;
+    cursor: default;
 }
 
 .side_panel_section_title {

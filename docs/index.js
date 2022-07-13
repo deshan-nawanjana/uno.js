@@ -67,6 +67,15 @@ window.addEventListener('load', () => {
             tray.appendChild(f)
         })
     })
+    // get top bar
+    const logo = document.querySelector('.side_panel_top')
+    // logo onclick to visit home page
+    logo.addEventListener('click', event => {
+        if(event.target.className === 'side_panel_top') {
+            location = '#'
+            tray.scrollTop = 0
+        }
+    })
 })
 
 const load = () => {
