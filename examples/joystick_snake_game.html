@@ -205,10 +205,15 @@
 
         // key listener for keyboard play
         window.addEventListener('keydown', event => {
-            if(event.key === 'w') { turnSnake('U') }
-            if(event.key === 'a') { turnSnake('L') }
-            if(event.key === 'd') { turnSnake('R') }
-            if(event.key === 's') { turnSnake('D') }
+            if(event.key === 'w' || event.key === 'ArrowUp') {
+                turnSnake('U')
+            } else if(event.key === 'a' || event.key === 'ArrowLeft') {
+                turnSnake('L')
+            } else if(event.key === 'd' || event.key === 'ArrowRight') {
+                turnSnake('R')
+            } else if(event.key === 's' || event.key === 'ArrowDown') {
+                turnSnake('D')
+            }
         })
 
         // create controller
