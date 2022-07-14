@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../index.css">
+    <link rel="stylesheet" href="../assets/libraries/prism.css">
+    <script src="../../dist/uno.min.js"></script>
+</head>
+<body class="center">
+    <div class="page">
+        <h1>State View</h1>
+        <p>
+            State View is an util that you can use to display a specific text with color code while running the uno.js program. Look at the following example that shows the current time of the computer in a state view util.
+        </p>
+        <div class="example"></div>
+        <p>
+            You can simply define a state view using StateView() and providing title text, initial display text and initial color. The color code should be an integer value and it will represent a color from uno.js color palette.
+        </p>
+<pre><code class="language-js">// create state view
+const view = new UNO.StateView('Sample State', 'display text', 3)
+
+// append to body
+document.body.appendChild(view.element)
+</code></pre>
+        <p>
+            Then use update() method to provide new text and color to update the content of the state view anytime.
+        </p>
+<pre><code class="language-js">// update state view text and color
+view.update('my new text', 12)</code></pre>
+        <p>
+            If the state view should be hidden in the beginning, provide true as 4th parameter.
+        </p>
+<pre><code class="language-js">// state view will be hidden
+const view = new UNO.StateView('Sample State', 'display text', 3, true)</code></pre>
+        <p>
+            And you can use show() and hide() methods to change its visibility.
+        </p>
+        <p>
+            Look at the following example. Here the state view only shows when microcontroller is connected. Whenever it stoped, state view will be hidden again.
+        </p>
+        <div class="example-2"></div>
+<pre><code class="language-js">// create controller
+const myBoard = new UNO.Controller()
+// create state view in hidden mode
+const state = new UNO.StateView('Controller Runtime', 'NO_TEXT', 3, true)
+
+// init function
+const init = async function() {
+    // start controller
+    await myBoard.init()
+    // show state view
+    state.show()
+    // start loop
+    loop()
+}
+
+// loop method
+const loop = async function() {
+    // get microseconds of controller
+    const time = await myBoard.micros()
+    // update state view
+    state.update(time, 3)
+    // next round
+    loop()
+}
+
+const stop = async function() {
+    // stop controller
+    await myBoard.stop()
+    // hide state view
+    state.hide()
+}
+
+// create start button
+const button = new UNO.StartButton(myBoard, init, stop)
+
+// append button element into body
+document.body.appendChild(button.element)
+
+// append state view element into body
+document.body.appendChild(monitor.element)
+</code></pre>
+    </div>
+    <script>
+        const sta = new UNO.StateView('Sample State', new Date().toLocaleTimeString(), 2)
+
+        setInterval(() => {
+            sta.update(new Date().toLocaleTimeString(), 2)
+        }, 1000)
+
+        document.querySelector('.example').appendChild(sta.element)
+    </script>
+    <script>
+        const myBoard = new UNO.Controller()
+        const state = new UNO.StateView('Controller Runtime', 'NO_TEXT', 3, true)
+
+        const init = async function() {
+            await myBoard.init()
+            state.show()
+            loop()
+        }
+
+        const loop = async function() {
+            const time = await myBoard.micros()
+            state.update(time, 3)
+            loop()
+        }
+
+        const stop = async function() {
+            await myBoard.stop()
+            state.hide()
+        }
+
+        const button = new UNO.StartButton(myBoard, init, stop)
+        document.querySelector('.example-2').appendChild(button.element)
+        document.querySelector('.example-2').appendChild(state.element)
+    </script>
+    <script src="../assets/libraries/prism.js"></script>
+</body>
+</html>

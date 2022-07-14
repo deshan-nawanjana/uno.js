@@ -14,11 +14,12 @@
         <p>
             To start the connection between microcontroller and the web browser, you have to initiate it using an user gesture such as mouse click. Also you have to check the browser compatibility for Web Srial API. To handle such thing, uno.js provdes you a start button that contains all those features and functionalities.
         </p>
+        <div class="example"></div>
         <p>
             Once you create the controller using UNO.Controller() with init and stop fuctions, you can define the StartButton() and provide those things as parameters. Then the button will take care of everything to start and stop the controller and also check the browser compatibility.
         </p>
 <pre><code class="language-js">// create controller
-const myBoard = new UNO.Uploader()
+const myBoard = new UNO.Controller()
 
 // init function
 const init = async function() {
@@ -31,7 +32,7 @@ const stop = async function() {
 }
 
 // create start button
-const button = UNO.StartButton(myBoard, init, stop)
+const button = new UNO.StartButton(myBoard, init, stop)
 
 // append button element into body
 document.body.appendChild(button.element)
@@ -43,6 +44,27 @@ document.body.appendChild(button.element)
             When browser does not have the Web Srial API, this button will become read and shows as an error. And user will get to see the popup and a link to MDN docs about browser compatibility of required API.
         </p>
     </div>
+    <script>
+        const uno = new UNO.Controller()
+
+        const init = async function() {
+            await uno.init()
+            loop()
+        }
+
+        const loop = async function() {
+            await uno.update()
+            loop()
+        }
+
+        const stop = async function() {
+            await uno.stop()
+        }
+
+        const btn = new UNO.StartButton(uno, init, stop)
+
+        document.querySelector('.example').appendChild(btn.element)
+    </script>
     <script src="../assets/libraries/prism.js"></script>
 </body>
 </html>

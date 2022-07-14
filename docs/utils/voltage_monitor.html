@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../index.css">
+    <link rel="stylesheet" href="../assets/libraries/prism.css">
+    <script src="../../dist/uno.min.js"></script>
+</head>
+<body class="center">
+    <div class="page">
+        <h1>Voltage Monitor</h1>
+        <p>
+            While running the uno.js library on your microcontroller, it always updates the states of pin voltages (analog and digital both). Therefore, you can examine those voltage levels using Voltage Monitor that comes with uno.js utils. Just connect your controller and press the start button to inspect.
+        </p>
+        <div class="example"></div>
+        <p>
+            You can use VoltageMonitor() to create this util and provide your controller as the only parameter. And you can append its element to web page body or anywhere you need.
+        </p>
+<pre><code class="language-js">// create controller
+const myBoard = new UNO.Controller()
+// create voltage monitor
+const monitor = new UNO.VoltageMonitor(myBoard)
+
+// init function
+const init = async function() {
+    // start controller
+    await myBoard.init()
+    // start loop
+    loop()
+}
+
+// loop method
+const loop = async function() {
+    // update controller state
+    await myBoard.update()
+    // next round
+    loop()
+}
+
+// create start button
+const button = new UNO.StartButton(myBoard, init)
+
+// append button element into body
+document.body.appendChild(button.element)
+
+// append voltage monitor element into body
+document.body.appendChild(monitor.element)
+</code></pre>
+        <p>
+            Voltage Monitor updates its values within every 10 milliseconds. You can chamge that using setInterval() method by providing the new refresh rate in milliseconds.
+        </p>
+<pre><code class="language-js">// create voltage monitor
+const monitor = new UNO.VoltageMonitor(myBoard)
+
+// set refresh rate to 50 milliseconds
+monitor.setInterval(50)
+</code></pre>
+        <p>
+            This refresh rate is important for user experience and program performance.
+        </p>
+    </div>
+    <script>
+        const uno = new UNO.Controller()
+        const vlt = new UNO.VoltageMonitor(uno)
+
+        const init = async function() {
+            await uno.init()
+            loop()
+        }
+
+        const loop = async function() {
+            await uno.update()
+            loop()
+        }
+
+        const stop = async function() {
+            await uno.stop()
+        }
+
+        const btn = new UNO.StartButton(uno, init, stop)
+
+        document.querySelector('.example').appendChild(btn.element)
+        document.querySelector('.example').appendChild(vlt.element)
+    </script>
+    <script src="../assets/libraries/prism.js"></script>
+</body>
+</html>

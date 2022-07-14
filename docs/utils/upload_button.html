@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../index.css">
+    <link rel="stylesheet" href="../assets/libraries/prism.css">
+    <script src="../../dist/uno.min.js"></script>
+</head>
+<body class="center">
+    <div class="page">
+        <h1>Upload Button</h1>
+        <p>
+            Upload Button is an util that conncted with UNO.Uploader(). Using upload button, you can manage to create a fast user interface widget to upload intel HEX files according o user selection. Following upload button is created t upload the uno.js client by selecting the Arduino microcontroller board model.
+        </p>
+        <div class="example"></div>
+        <p>
+            Like that, you can provide a list of hex files and appropriate titles to them and represent as an upload button. Look at the following example. You have to create the Uploader() first. Then provide it as a parameter to the upload button.
+        </p>
+<pre><code class="language-js">// create uploader
+const uploader = new UNO.Uploader()
+
+// create upload button
+const button = new UNO.UploadButton(uploader, {
+    'File #1' : { board : 'uno', file : 'path/to/file_1.hex' },
+    'File #2' : { board : 'uno', file : 'path/to/file_2.hex' },
+    'File #3' : { board : 'uno', file : 'path/to/file_3.hex' }
+})
+
+// append button into body
+document.body.appendChild(button.element)
+</code></pre>
+    <p>
+        Above example will display the upload button with a drop down for File #1, File #2 and File #3. You can see that those are the root keys of input object structure to the upload button. Also each child object contains the board and hex file URL. These options were already explained in Uploader().
+    </p>
+
+    </div>
+    <script>
+        const dir = '../../dist/client_hex/'
+        const upd = new UNO.UploadButton(new UNO.Uploader, {
+            'Arduino Uno'  : { board : 'uno',  file : dir + 'arduino_uno.hex' },
+            'Arduino Mega' : { board : 'mega', file : dir + 'arduino_mega.hex' },
+            'Arduino Nano' : { board : 'nano', file : dir + 'arduino_nano.hex' }
+        })
+
+        document.querySelector('.example').appendChild(upd.element)
+    </script>
+    <script src="../assets/libraries/prism.js"></script>
+</body>
+</html>

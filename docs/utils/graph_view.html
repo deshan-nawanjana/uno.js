@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../index.css">
+    <link rel="stylesheet" href="../assets/libraries/prism.css">
+    <script src="../../dist/uno.min.js"></script>
+</head>
+<body class="center">
+    <div class="page">
+        <h1>Graph View</h1>
+        <p>
+            Displaying variation of a voltage output or anyother variable is important in development. GraphView() is an util that you can display that kind of information in realtime while using uno.js.
+        </p>
+        <div class="example"></div>
+        <p>
+            You can create a graph view using GraphView() and provide the title text and variable count. Next you have to provide the variation range.
+        </p>
+<pre><code class="language-js">// create graph view with three variables
+// these three variables vary between -50 and +50
+const graph = new UNO.GraphView('Sample Graph', 3, -50, 50)
+
+// append to body
+document.body.appendChild(graph.element)
+</code></pre>
+        <p>
+            Then use update() method to provide the current values as an object. Keys of this object will be displayed as the labels and value will be used to draw the next state of the graph.
+        </p>
+<pre><code class="language-js">// update graph
+graph.update({ 'X' : 40, 'Y' : -10, 'Z' : 22 })</code></pre>
+        <p>
+            If the graph view should be hidden in the beginning, provide true as 5th parameter.
+        </p>
+<pre><code class="language-js">// graph view will be hidden
+const view = new UNO.GraphView('Sample Graph', 3, -50, 50, true)</code></pre>
+        <p>
+            And you can use show() and hide() methods to change its visibility.
+        </p>
+        <p>
+            Look at the following example. Here the graph view only shows when microcontroller is connected. Whenever it stoped, graph view will be hidden again.
+        </p>
+        <div class="example-2"></div>
+<pre><code class="language-js">// create controller
+const myBoard = new UNO.Controller()
+// create graph view in hidden mode
+const graph = new UNO.GraphView('Voltage Readings', 3, 0, 1023, true)
+
+// init function
+const init = async function() {
+    // start controller
+    await myBoard.init()
+    // show graph view
+    graph.show()
+    // start loop
+    loop()
+}
+
+// loop method
+const loop = async function() {
+    // update graph view
+    graph.update({
+        'A0' : myBoard.analogRead(0),
+        'A1' : myBoard.analogRead(1),
+        'A2' : myBoard.analogRead(2)
+    })
+    // update controller
+    await myBoard.update()
+    // next round
+    loop()
+}
+
+const stop = async function() {
+    // stop controller
+    await myBoard.stop()
+    // hide graph view
+    graph.hide()
+}
+
+// create start button
+const button = new UNO.StartButton(myBoard, init, stop)
+
+// append button element into body
+document.body.appendChild(button.element)
+
+// append graph view element into body
+document.body.appendChild(graph.element)
+</code></pre>
+    </div>
+    <script>
+        const grp = new UNO.GraphView('Sample Graph', 3, 0, 50)
+
+        setInterval(() => {
+            grp.update({
+                'X' : Math.floor(Math.random() * 20) + 20,
+                'Y' : Math.floor(Math.random() * 20) + 20,
+                'Z' : Math.floor(Math.random() * 20) + 20
+            })
+        }, 50)
+
+        document.querySelector('.example').appendChild(grp.element)
+    </script>
+    <script>
+        const myBoard = new UNO.Controller()
+        const graph = new UNO.GraphView('Voltage Readings', 3, 0, 1023, true)
+
+        const init = async function() {
+            await myBoard.init()
+            graph.show()
+            loop()
+        }
+
+        const loop = async function() {
+            graph.update({
+                'A0' : myBoard.analogRead(0),
+                'A1' : myBoard.analogRead(1),
+                'A2' : myBoard.analogRead(2)
+            })
+            await myBoard.update()
+            loop()
+        }
+
+        const stop = async function() {
+            await myBoard.stop()
+            graph.hide()
+        }
+
+        const button = new UNO.StartButton(myBoard, init, stop)
+        document.querySelector('.example-2').appendChild(button.element)
+        document.querySelector('.example-2').appendChild(graph.element)
+    </script>
+    <script src="../assets/libraries/prism.js"></script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../index.css">
+    <link rel="stylesheet" href="../assets/libraries/prism.css">
+    <script src="../../dist/uno.min.js"></script>
+</head>
+<body class="center">
+    <div class="page">
+        <h1>Serial Monitor</h1>
+        <p>
+            Since uno.js uses serial communication to contact with microcontroller, there is an unstopping serial message system happens during the application run time. These messages are generated using special pattern that both controller and front-end script can understand. You can examin these messages using SerialMonitor() for uno.js debugging purpose. That means you able to identify if there is any issue with uno.js library.
+        </p>
+        <p>
+            Connect your microcontroller and press the start button to inspect all the serial messages. You are able to toggle between incomming and outgoing data from right top drop list.
+        </p>
+        <div class="example"></div>
+        <p>
+            Serial Monitor displays you the latest 8 messages that communicated between controller and the web browser.
+        </p>
+<pre><code class="language-js">// create controller
+const myBoard = new UNO.Controller()
+// create serial monitor
+const monitor = new UNO.SerialMonitor(myBoard)
+
+// init function
+const init = async function() {
+    // start controller
+    await myBoard.init()
+    // start loop
+    loop()
+}
+
+// loop method
+const loop = async function() {
+    // update controller state
+    await myBoard.update()
+    // next round
+    loop()
+}
+
+// create start button
+const button = new UNO.StartButton(myBoard, init)
+
+// append button element into body
+document.body.appendChild(button.element)
+
+// append serial monitor element into body
+document.body.appendChild(monitor.element)
+</code></pre>
+        <p>
+            Srial Monitor updates its values within every 10 milliseconds. You can chamge that using setInterval() method by providing the new refresh rate in milliseconds.
+        </p>
+<pre><code class="language-js">// create voltage monitor
+const monitor = new UNO.SerialMonitor(myBoard)
+
+// set refresh rate to 50 milliseconds
+monitor.setInterval(50)
+</code></pre>
+        <p>
+            This refresh rate is important for user experience and program performance.
+        </p>
+    </div>
+    <script>
+        const uno = new UNO.Controller()
+        const srm = new UNO.SerialMonitor(uno)
+
+        const init = async function() {
+            await uno.init()
+            loop()
+        }
+
+        const loop = async function() {
+            await uno.update()
+            loop()
+        }
+
+        const stop = async function() {
+            await uno.stop()
+        }
+
+        const btn = new UNO.StartButton(uno, init, stop)
+
+        document.querySelector('.example').appendChild(btn.element)
+        document.querySelector('.example').appendChild(srm.element)
+    </script>
+    <script src="../assets/libraries/prism.js"></script>
+</body>
+</html>
