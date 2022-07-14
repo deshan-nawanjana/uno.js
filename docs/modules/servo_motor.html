@@ -14,9 +14,7 @@
         <p>
             Servo Motor is a special motor category that you can rotate it by a specific angle. You just have to connect three pins to the controller to begin.
         </p>
-<pre><code class="language-path">SRV(VCC) = 5V
-SRV(GND) = GND
-SRV(IN) = PIN(10)</code></pre>
+        <div class="setup"></div>
         <p>
             Connect the servo motor VCC and Ground to the controller voltage supply pins and connect input signal to PIN 4.
         </p>
@@ -88,6 +86,18 @@ window.addEventListener('click', init)</code></pre>
         document.querySelector('.example').appendChild(btn.element)
 
         document.querySelector('.example').appendChild(sta.element)
+    </script>
+    <script>
+        const setup = new UNO.SetupView({
+            'ARD' : 'Arduino Board',
+            'SRV' : 'Servo Motor'
+        }, [
+            'SRV(VCC) = 5V',
+            'SRV(GND) = GND',
+            'SRV(IN) = PIN(10)'
+        ])
+
+        document.querySelector('.setup').appendChild(setup.element)
     </script>
 </body>
 </html>

@@ -172,3 +172,7 @@ a:hover {
 .language-path {
     color: #fff6 !important;
 }
+
+.unjs-util-setup-view {
+    width: auto !important;
+}

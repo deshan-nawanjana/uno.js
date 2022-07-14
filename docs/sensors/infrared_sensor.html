@@ -10,19 +10,17 @@
 </head>
 <body class="center">
     <div class="page">
-        <h1>Passive Infrared Sensor (PIR)</h1>
+        <h1>Infrared Sensor (IR)</h1>
         <p>
-            Passive Infrared sensor is a sensor that can detect the motion of humans (or animals).
+            IR sensor can determine a motion and input as a voltage to the controller. Then you can use it for many purposes to develop applications.
         </p>
-<pre><code class="language-path">PIR(VCC) = 5V
-PIR(GND) = GND
-PIR(OUT) = PIN(3)</code></pre>
+        <div class="setup"></div>
         <p>
-            Connect the PIR Sensor to the microcontroller and press the start button.
+            Connect the IR sensor to the microcontroller and press the start button.
         </p>
         <div class="example"></div>
         <p>
-            You can determine the motion detection value simply by reading digital value of a pin as in this example.
+            Taking the output of the IR sensor as an anlog value and do the selection is shown in the example. using few of these sensor together, you can even detect the motions direction.
         </p>
 <pre><code class="language-js">// create controller
 const myBoard = new UNO.Controller()
@@ -35,13 +33,13 @@ const init = async function() {
 }
 
 const loop = async function() {
-    // check digital value from sensor
-    if(myBoard.analogRead(3)) {
+    // check analog value from ir sensor
+    if(myBoard.analogRead(0) > 300) {
         // display state
-        console.log('MOTION DETECTED')
+        console.log('NOT DETECTED')
     } else {
         // display state
-        console.log('NO DETECTION')
+        console.log('DETECTED')
     }
     // update uno state
     await myBoard.update()
@@ -55,7 +53,8 @@ window.addEventListener('click', init)</code></pre>
     <script src="../assets/libraries/prism.js"></script>
     <script>
         const uno = new UNO.Controller()
-        const sta = new UNO.StateView('PIR Sensor Output', 'NO DETECTION', 2)
+        const sta = new UNO.StateView('IR Detection', 'NOT DETECTED', 0)
+        const grp = new UNO.GraphView('Analog Read', 1, 0, 1023)
 
         const init = async function() {
             await uno.init()
@@ -63,10 +62,11 @@ window.addEventListener('click', init)</code></pre>
         }
 
         const loop = async function() {
-            if(uno.digitalRead(3)) {
-                sta.update('MOTION DETECTED', 0)
+            grp.update({ 'A0' : uno.analogRead(0) })
+            if(uno.analogRead(0) > 300) {
+                sta.update('NOT DETECTED', 0)
             } else {
-                sta.update('NO DETECTION', 2)
+                sta.update('DETECTED', 1)
             }
             await uno.update()
             loop()
@@ -80,7 +80,21 @@ window.addEventListener('click', init)</code></pre>
 
         document.querySelector('.example').appendChild(btn.element)
 
+        document.querySelector('.example').appendChild(grp.element)
+
         document.querySelector('.example').appendChild(sta.element)
+    </script>
+    <script>
+        const setup = new UNO.SetupView({
+            'ARD' : 'Arduino Board',
+            'IRS' : 'Infrared Sensor'
+        }, [
+            'IRS(VCC) = 5V',
+            'IRS(GND) = GND',
+            'IRS(OUT) = PIN(A0)'
+        ])
+
+        document.querySelector('.setup').appendChild(setup.element)
     </script>
 </body>
 </html>

@@ -14,9 +14,7 @@
         <p>
             Microphone sensor can determine the sound and input as a voltage to the controller.
         </p>
-<pre><code class="language-path">IRS(VCC) = 5V
-IRS(GND) = GND
-IRS(OUT) = PIN(A0)</code></pre>
+        <div class="setup"></div>
         <p>
             Connect the microphone to the controller and press the start button. Make sure you have adjust microphone sensitivity by its potentiometer.
         </p>
@@ -85,6 +83,18 @@ window.addEventListener('click', init)</code></pre>
         document.querySelector('.example').appendChild(grp.element)
 
         document.querySelector('.example').appendChild(sta.element)
+    </script>
+    <script>
+        const setup = new UNO.SetupView({
+            'ARD' : 'Arduino Board',
+            'MIC' : 'Microphone Sensor'
+        }, [
+            'MIC(VCC) = 5V',
+            'MIC(GND) = GND',
+            'MIC(OUT) = PIN(A0)'
+        ])
+
+        document.querySelector('.setup').appendChild(setup.element)
     </script>
 </body>
 </html>

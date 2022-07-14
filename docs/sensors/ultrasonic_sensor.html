@@ -14,10 +14,7 @@
         <p>
             Using ultrasonic sensor, you can determine the distance to the wall or anything in front of it. This sensor uses ultrasonic waves to calculate the echo time and using that echo time we will be able to calculate the distance.
         </p>
-<pre><code class="language-path">USS(VCC) = 5V
-USS(TRG) = PIN(12)
-USS(ECH) = PIN(13)
-USS(GND) = GND</code></pre>
+        <div class="setup"></div>
         <p>
             Connect the ultrasonic sensor to the microcontroller and press the start button.
         </p>
@@ -84,6 +81,19 @@ window.addEventListener('click', init)</code></pre>
         document.querySelector('.example').appendChild(btn.element)
 
         document.querySelector('.example').appendChild(sta.element)
+    </script>
+    <script>
+        const setup = new UNO.SetupView({
+            'ARD' : 'Arduino Board',
+            'USS' : 'Ultrasonic Sensor'
+        }, [
+            'USS(VCC) = 5V',
+            'USS(TRG) = PIN(12)',
+            'USS(ECH) = PIN(13)',
+            'USS(GND) = GND'
+        ])
+
+        document.querySelector('.setup').appendChild(setup.element)
     </script>
 </body>
 </html>

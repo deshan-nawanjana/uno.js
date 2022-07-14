@@ -14,10 +14,7 @@
         <p>
             Using accelerometer module, you can determine the three-axis acceleration. Here uno.js uses ADXL345 library. Therefore you need to connect accelerometer to your microcontroller as follows.
         </p>
-<pre><code class="language-path">ACC(VCC) = ACC(CS) = 3V3
-ACC(GND) = GND
-ACC(SDA) = PIN(A4)
-ACC(SCL) = PIN(A5)</code></pre>
+        <div class="setup"></div>
         <p>
             Click the start button and see the accelerometer readings.
         </p>
@@ -80,6 +77,18 @@ window.addEventListener('click', init)</code></pre>
         document.querySelector('.example').appendChild(btn.element)
 
         document.querySelector('.example').appendChild(grp.element)
+    </script>
+    <script>
+        const setup = new UNO.SetupView({
+            'ARD' : 'Arduino Board',
+            'ACC' : 'Accelerometer'
+        }, [
+            'ACC(GND) = GND',
+            'ACC(SDA) = PIN(A4)',
+            'ACC(SCL) = PIN(A5)'
+        ])
+
+        document.querySelector('.setup').appendChild(setup.element)
     </script>
 </body>
 </html>

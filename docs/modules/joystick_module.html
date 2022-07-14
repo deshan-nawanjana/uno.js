@@ -14,11 +14,7 @@
         <p>
             Most of the game controllers have this kind of components to make the gameplay easy and grate with experiance. Using joystick module, you and identify X and Y angle of the joy stick and also whether user is being pressing the stick middle button. Look at the following simple setup.
         </p>
-<pre><code class="language-path">JST(GND) = GND
-JST(VCC) = 5V
-JST(VRX) = PIN(A0)
-JST(VRY) = PIN(A1)
-JST(SW) = PIN(2)</code></pre>
+        <div class="setup"></div>
         <p>
             We will read the angles as analog values and button as a digital value. Click the start button and see the joystick module readings.
         </p>
@@ -96,6 +92,20 @@ window.addEventListener('click', init)</code></pre>
         document.querySelector('.example').appendChild(grp.element)
 
         document.querySelector('.example').appendChild(sta.element)
+    </script>
+    <script>
+        const setup = new UNO.SetupView({
+            'ARD' : 'Arduino Board',
+            'JST' : 'Joystick Module'
+        }, [
+            'JST(GND) = GND',
+            'JST(VCC) = 5V',
+            'JST(VRX) = PIN(A0)',
+            'JST(VRY) = PIN(A1)',
+            'JST(SW) = PIN(2)'
+        ])
+
+        document.querySelector('.setup').appendChild(setup.element)
     </script>
 </body>
 </html>

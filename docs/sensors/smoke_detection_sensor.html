@@ -14,9 +14,7 @@
         <p>
             Smoke Detection Sensor can detect LPG, Smoke, Alcohol, Propane, Hydrogen, Methane and Carbon Monoxide concentrations anywhere. Connect the sensor according to following pin setup.
         </p>
-<pre><code class="language-path">SDS(VCC) = 5V
-SDS(GND) = GND
-SDS(OUT) = PIN(A0)</code></pre>
+        <div class="setup"></div>
         <p>
             You can simply get the some detection level as an anlog reading.
         </p>
@@ -70,6 +68,18 @@ window.addEventListener('click', init)</code></pre>
         document.querySelector('.example').appendChild(btn.element)
 
         document.querySelector('.example').appendChild(grp.element)
+    </script>
+    <script>
+        const setup = new UNO.SetupView({
+            'ARD' : 'Arduino Board',
+            'SMK' : 'Smoke Detection Sensor'
+        }, [
+            'SMK(VCC) = 5V',
+            'SMK(GND) = GND',
+            'SMK(OUT) = PIN(A0)'
+        ])
+
+        document.querySelector('.setup').appendChild(setup.element)
     </script>
 </body>
 </html>

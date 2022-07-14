@@ -14,9 +14,7 @@
         <p>
             Flame Detection Sensor is a sensor designed to detect and respond to the presence of a flame or fire, allowing flame detection.
         </p>
-<pre><code class="language-path">FDS(VCC) = 5V
-FDS(GND) = GND
-FDS(OUT) = PIN(3)</code></pre>
+        <div class="setup"></div>
         <p>
             Connect the Flame Detection Sensor to the microcontroller and press the start button.
         </p>
@@ -81,6 +79,18 @@ window.addEventListener('click', init)</code></pre>
         document.querySelector('.example').appendChild(btn.element)
 
         document.querySelector('.example').appendChild(sta.element)
+    </script>
+    <script>
+        const setup = new UNO.SetupView({
+            'ARD' : 'Arduino Board',
+            'FLM' : 'Flame Detection Sensor'
+        }, [
+            'FLM(VCC) = 5V',
+            'FLM(GND) = GND',
+            'FLM(OUT) = PIN(3)'
+        ])
+
+        document.querySelector('.setup').appendChild(setup.element)
     </script>
 </body>
 </html>

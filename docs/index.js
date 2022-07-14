@@ -21,12 +21,12 @@ docs['Modules'] = {
 
 docs['Sensors'] = {
     'Ultrasonic Sensor' : 'sensors/ultrasonic_sensor.html',
-    'IR Sensor' : 'sensors/ir_sensor.html',
+    'Infrared Sensor' : 'sensors/infrared_sensor.html',
     'Microphone Sensor' : 'sensors/microphone_sensor.html',
     'Barometric Pressure Sensor' : 'sensors/barometric_pressure_sensor.html',
     'Flame Detection Sensor' : 'sensors/flame_detection_sensor.html',
     'Smoke Detection Sensor' : 'sensors/smoke_detection_sensor.html',
-    'PIR Sensor' : 'sensors/pir_sensor.html'
+    'Passive Infrared Sensor' : 'sensors/passive_infrared_sensor.html'
 }
 
 docs['Tools'] = {

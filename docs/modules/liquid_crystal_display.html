@@ -14,20 +14,7 @@
         <p>
             When it comes to displaying text and symbols in Arduino, Liquid Crystal Display takes the first place. uno.js currently provides you features to connect LCD using 12 pins. Therefore you have to connect your LCD to exact following pins. To balance the contrast you need a potentiometer as well.
         </p>
-<pre><code class="language-path">LCD(VSS) = GND
-LCD(VDD) = 5V
-LCD(V0) = POT(WP)
-LCD(RS) = PIN(7)
-LCD(RW) = GND
-LCD(D4) = PIN(9)
-LCD(D5) = PIN(10)
-LCD(D6) = PIN(11)
-LCD(D7) = PIN(12)
-LCD(A) = 5V
-LCD(K) = GND
-LCD(E) = PIN(8)
-POT(T1) = 5V
-POT(T2) = GND</code></pre>
+        <div class="setup"></div>
         <p>
             Connect your liquid crystal display and the potentiometer to the microcontroller correctly and press the start button.
         </p>
@@ -94,6 +81,25 @@ window.addEventListener('click', init)</code></pre>
         document.querySelector('.example').appendChild(btn.element)
 
         document.querySelector('.example').appendChild(sta.element)
+    </script>
+<pre><code class="language-path"></code></pre>
+    <script>
+        const setup = new UNO.SetupView({
+            'ARD' : 'Arduino Board',
+            'LCD' : 'Liquid Crystal Display'
+        }, [
+            'LCD(VSS) = LCD(RW) = LCD(K) = POT(T2) = GND',
+            'LCD(VDD) = LCD(A) = POT(T1) = 5V',
+            'LCD(V0) = POT(WP)',
+            'LCD(RS) = PIN(7)',
+            'LCD(D4) = PIN(9)',
+            'LCD(D5) = PIN(10)',
+            'LCD(D6) = PIN(11)',
+            'LCD(D7) = PIN(12)',
+            'LCD(E) = PIN(8)'
+        ])
+
+        document.querySelector('.setup').appendChild(setup.element)
     </script>
 </body>
 </html>
