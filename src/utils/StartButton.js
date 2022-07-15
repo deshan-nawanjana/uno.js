@@ -22,8 +22,16 @@ UNO.StartButton = class {
             if(mode === 'starting' || mode === 'stopping') { return }
             // select controller state
             if(controller._state.runs === false) {
-                // start event
-                startEvent()
+                if(startEvent) {
+                    // start event
+                    startEvent()
+                } else if(controller.init) {
+                    // init controller
+                    controller.init()
+                } else if(controller.start) {
+                    // start communicator
+                    controller.start()
+                }
             } else {
                 if(stopEvent) {
                     // stop event

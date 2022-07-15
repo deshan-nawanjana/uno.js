@@ -41,8 +41,8 @@ UNO.SetupView = class {
             const array = line.split('=')
             // add inner content
             item.innerHTML = `
-                <div>
-                ${array.join('</div><div class="setup-view-setup-join"></div><div>')}
+                <div class="setup-view-setup-pin">
+                ${array.join('</div><div class="setup-view-setup-join"></div><div class="setup-view-setup-pin">')}
                 </div>
             `
             // append to setup

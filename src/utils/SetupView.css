@@ -50,7 +50,6 @@
 }
 
 .setup-view-setup-item > div {
-    width: 60px;
     color: #FFF4;
     font-size: 11px;
     height: 30px;
@@ -61,11 +60,15 @@
 
 .setup-view-setup-join {
     width: 30px !important;
-    margin-right: 10px;
+    padding-right: 10px;
     background-image: url('data:image/svg+xml,<svg version="1.1" viewBox="0 0 16 16" width="200" height="200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="fill: rgb(255, 255, 255); opacity: 0.16; transform: rotate(0deg) scale(0.7, 0.7);"><g><path fill-rule="evenodd" d="M10.5 7.75a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zm1.43.75a4.002 4.002 0 01-7.86 0H.75a.75.75 0 110-1.5h3.32a4.001 4.001 0 017.86 0h3.32a.75.75 0 110 1.5h-3.32z"></path></g></svg>');
     background-position: center;
     background-size: auto 60%;
     background-repeat: no-repeat;
+}
+
+.setup-view-setup-pin {
+    min-width: 60px;
 }
 
 [class^='unojs-icon-'] {

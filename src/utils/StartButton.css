@@ -1,3 +1,9 @@
+.unojs-util, .unojs-util * {
+    user-select: none;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
 .unojs-util-start-button {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     height: 50px;
