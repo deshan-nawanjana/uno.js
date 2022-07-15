@@ -16,6 +16,7 @@ docs['Modules'] = {
     'Accelerometer' : 'modules/accelerometer.html',
     'Liquid Crystal Display' : 'modules/liquid_crystal_display.html',
     'Servo Motor' : 'modules/servo_motor.html',
+    'Buzzer Module' : 'modules/buzzer_module.html',
     'Joystick Module' : 'modules/joystick_module.html'
 }
 
@@ -30,7 +31,8 @@ docs['Sensors'] = {
 }
 
 docs['Tools'] = {
-    'Uploader' : 'tools/uploader.html'
+    'Uploader' : 'tools/uploader.html',
+    'Communicator' : 'tools/communicator.html'
 }
 
 docs['Utils'] = {
@@ -40,6 +42,8 @@ docs['Utils'] = {
     'Serial Monitor' : 'utils/serial_monitor.html',
     'State View' : 'utils/state_view.html',
     'Graph View' : 'utils/graph_view.html',
+    'Setup View' : 'utils/setup_view.html',
+    'Communicate View' : 'utils/communicate_view.html',
     'Upload Button' : 'utils/upload_button.html'
 }
 

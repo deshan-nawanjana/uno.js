@@ -176,3 +176,7 @@ a:hover {
 .unjs-util-setup-view {
     width: auto !important;
 }
+
+.example > .unjs-util-setup-view {
+    width: 300px !important;
+}
