@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../index.css">
+    <link rel="stylesheet" href="../assets/libraries/prism.css">
+    <script src="../../dist/uno.min.js"></script>
+</head>
+<body class="center">
+    <div class="page">
+        <h1>Setup View</h1>
+        <p>
+            When you need to list down required components and how to connect those components with each other, you can use SetupView() to create it faster. State view even contains icons for each Arduino component that you can use anywhere in your web page.
+        </p>
+        <div class="example"></div>
+        <p>
+            Simply use SetupView() to create the util and provide an object as first parameter representing icon keys and label for each those items. Then as the second parameter, you have to provide a string array. This array should contain connections in each item and equal sign (=) in the middle of those pin connections.
+        </p>
+<pre><code class="language-js">// create setup view
+const setup = new UNO.SetupView({
+    'ARD' : 'Arduino Board',
+    'ACC' : 'Accelerometer'
+}, [
+    'ACC(GND) = GND',
+    'ACC(SDA) = PIN(A4)',
+    'ACC(SCL) = PIN(A5)'
+])
+
+// append setup view element to body
+document.body.appendChild(setup.element)</code></pre>
+        <p>
+            You can use labels anyhow you need. But key values should be specific that represent icon codes from uno.js. Look at the following list of icon codes.
+        </p>
+<pre><code class="language-path">ARD - Arduno Board
+
+ACC - Accelerometer Module
+LCD - Liquid Crystal Display
+SRV - Servo Motor
+JST - Joystick Module
+BZR - Buzzer Module
+LSR - Laser Module
+IRR - Infrared Receiver
+
+USS - Ultrasonic Sensor
+IRS - Infrared Sensor
+MIC - Microphone Sensor
+BPS - Barometric Pressure Sensor
+FLM - Flame Detection Sensor
+SMK - Smoke Detection Sensor
+PIR - Passive Infrared Sensor
+
+LED - Light Emitting Diode</code></pre>
+    </div>
+    <script>
+        const setup = new UNO.SetupView({
+            'ARD' : 'Arduino Board',
+            'ACC' : 'Accelerometer'
+        }, [
+            'ACC(GND) = GND',
+            'ACC(SDA) = PIN(A4)',
+            'ACC(SCL) = PIN(A5)'
+        ])
+
+        document.querySelector('.example').appendChild(setup.element)
+    </script>
+    <script src="../assets/libraries/prism.js"></script>
+</body>
+</html>
