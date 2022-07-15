@@ -170,7 +170,7 @@ void PIN_STATE() {
 
 void VER_CLNT_() {
   PIN_STATE();
-  Serial.write(2);
+  Serial.write(3);
   Serial.write(1);
   Serial.write(22);
 }
@@ -199,8 +199,8 @@ void DT_WRITE_() {
     if(bytes[i] == SPR) {
       p += 1;
     } else {
-      if(p == 0) { pinMode(bytes[i], LOW); } else
-      if(p == 1) { pinMode(bytes[i], HIGH); }
+      if(p == 0) { digitalWrite(bytes[i], LOW); } else
+      if(p == 1) { digitalWrite(bytes[i], HIGH); }
     }
   }
   PIN_STATE();
