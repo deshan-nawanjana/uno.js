@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../index.css">
+    <link rel="stylesheet" href="../assets/libraries/prism.css">
+    <script src="../../dist/uno.min.js"></script>
+</head>
+<body class="center">
+    <div class="page">
+        <h1>Communicator for Serial Communication</h1>
+        <p>
+            Instead of using uno.js client and the library methods, you can use UNO.Communicator() to use serial communication for your own Arduino program. Also see CommunicateView() documentation that associates with this tool.
+        </p>
+        <p>
+            You will be able to simply write or read from the serial port and add event listeners to capture data. Look at the following example.
+        </p>
+<pre><code class="language-js">// create communicator
+const com = new UNO.Communicator()
+
+// add event listener to receive messages
+com.addEventListener('messages', event => {
+    // display the message from controller
+    console.log(event.data)
+})
+
+// start method
+const init = async function() {
+    // start communication with 9600 baud rate
+    await com.start(9600)
+    // send message to controller
+    await com.write('Hello from Web Browser')
+}
+
+// user gesture to start communicator
+window.addEventListener('click', init)</code></pre>
+        <p>
+            If you need to change the baud rate of the communication, you can use restart() method. And provide the new baud rate as only parameter.
+        </p>
+        <pre><code class="language-js">// restart communicator with new baud rate
+await com.restart(57600)</code></pre>
+        <p>
+            To stop the communication, use stop() method.
+        </p>
+        <pre><code class="language-js">await com.stop()</code></pre>
+        <p>
+            There are few event listeners that you can use to capture the communicator status. Use addEventListener() method with type and the callback function as parameters.
+        </p>
+        <pre><code class="language-js">// display if any error occurred
+com.addEventListener('error', event => { console.log(error) })</code></pre>
+        <p>
+            Callback function will receive event data object including { type, data, baudRate, timeStamp, method }. Data property will be included only if the event is read or message. method property only included with error type events and representing the method type of error.
+        </p>
+        <p>
+            Look at the following event types that you can use with addEventListener() method.
+        </p>
+<pre><code class="language-path">message    - when message is received completely
+read       - when data (part of a message) is received
+write      - when write successfully
+start      - when communication is started
+stop       - when communication is stoped
+error      - when error is occurred
+disconnect - when controller is disconnected</code></pre>
+    </div>
+    <script src="../assets/libraries/prism.js"></script>
+</body>
+</html>
