@@ -8,7 +8,7 @@ window.LED_BUILTIN = 13
 
 window._UNO_ = {
     // current version and older versions
-    VER : { CRR : '2.1.22', OLD : ['1.0.22', '1.1.22'] }
+    VER : { CRR : '3.1.22', OLD : ['1.0.22', '1.1.22', '2.1.22'] }
 }
 
 window._UNO_.MSG = {
