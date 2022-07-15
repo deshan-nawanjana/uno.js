@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../index.css">
+    <link rel="stylesheet" href="../assets/libraries/prism.css">
+    <script src="../../dist/uno.min.js"></script>
+</head>
+<body class="center">
+    <div class="page">
+        <h1>Buzzer Module</h1>
+        <p>
+            Using buzzer module, you can generate sounds with multiple frequencies. Buzzer() uses tone(), the built-in method in Arduino to generate sounds. Click the buzzer module as follows and press the start button to play the sound.
+        </p>
+        <div class="setup"></div>
+        <div class="example"></div>
+        <p>
+            First you have to create an array of objects. each object should contain frequency and duration of that frequency play time. this array should be provided to the playTone() method in Buzzer() whenever you need to play that sound.
+        </p>
+<pre><code class="language-js">// create controller
+const myBoard = new UNO.Controller()
+// create buzzer that connected to digital pin 2
+const buzzer = new UNO.Buzzer(uno, 2)
+
+// tone array
+const tones = [
+    { frequency : 4000, duration : 100 },
+    { frequency : 12000, duration : 80 },
+    { frequency : 8000, duration : 120 },
+    { frequency : 24000, duration : 40 },
+]
+
+const init = async function() {
+    // start controller
+    await myBoard.init()
+    // start loop
+    loop()
+}
+
+const loop = async function() {
+    // play tone array
+    await buzzer.playTone(tones)
+    // loop again
+    loop()
+}
+
+// click on window to start
+window.addEventListener('click', init)</code></pre>
+    </div>
+    <script src="../assets/libraries/prism.js"></script>
+    <script>
+        const uno = new UNO.Controller()
+        const bzr = new UNO.Buzzer(uno, 2)
+
+        const tone = [
+            { frequency : 4000, duration : 100 },
+            { frequency : 12000, duration : 80 },
+            { frequency : 8000, duration : 120 },
+            { frequency : 24000, duration : 40 },
+        ]
+
+        const init = async function() {
+            await uno.init()
+            loop()
+        }
+
+        const loop = async function() {
+            await bzr.playTone(tone)
+            loop()
+        }
+
+        const stop = async function() {
+            await uno.stop()
+        }
+
+        const btn = new UNO.StartButton(uno, init, stop)
+
+        document.querySelector('.example').appendChild(btn.element)
+    </script>
+    <script>
+        const setup = new UNO.SetupView({
+            'ARD' : 'Arduino Board',
+            'BZR' : 'Buzzer Module'
+        }, [
+            'BZR(GND) = GND',
+            'BZR(VCC) = 5V',
+            'BZR(I/O) = PIN(2)'
+        ])
+
+        document.querySelector('.setup').appendChild(setup.element)
+    </script>
+</body>
+</html>
