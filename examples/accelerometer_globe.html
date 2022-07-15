@@ -40,6 +40,13 @@
             top: 0px;
             left: calc(100vw - 340px);
         }
+
+        .unjs-util-setup-view {
+            position: fixed;
+            z-index: 2;
+            top: calc(100vh - 270px);
+            left: calc(100vw - 340px);
+        }
     </style>
 </head>
 <body>
@@ -147,6 +154,19 @@
 
         // start three render
         render()
+
+        // create setup
+        const setup = new UNO.SetupView({
+            'ARD' : 'Arduino Board',
+            'ACC' : 'Accelerometer'
+        }, [
+            'ACC(GND) = GND',
+            'ACC(SDA) = PIN(A4) / PIN(SDA)',
+            'ACC(SCL) = PIN(A5) / PIN(SCL)'
+        ])
+
+        // append setup
+        document.body.appendChild(setup.element)
     </script>
 </body>
 </html>

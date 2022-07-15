@@ -37,6 +37,13 @@
             top: 0px;
             left: calc(100vw - 340px);
         }
+
+        .unjs-util-setup-view {
+            position: fixed;
+            z-index: 2;
+            top: calc(100vh - 300px);
+            left: calc(100vw - 340px);
+        }
     </style>
 </head>
 <body>
@@ -232,8 +239,8 @@
         // loop method
         const loop = async function() {
             // get x and y readings from joystick
-            const x = uno.analogRead(4)
-            const y = uno.analogRead(5)
+            const x = uno.analogRead(0)
+            const y = uno.analogRead(1)
             // check value range to turn snake
             if(x < 20) { turnSnake('L') } else if(x > 1000) { turnSnake('R') }
             if(y < 20) { turnSnake('U') } else if(y > 1000) { turnSnake('D') }
@@ -259,6 +266,20 @@
 
         // reset to new game
         resetGame()
+
+        // create setup
+        const setup = new UNO.SetupView({
+            'ARD' : 'Arduino Board',
+            'JST' : 'Joystick Module'
+        }, [
+            'JST(GND) = GND',
+            'JST(VCC) = 5V',
+            'JST(VRX) = PIN(A0)',
+            'JST(VRY) = PIN(A1)'
+        ])
+
+        // append setup
+        document.body.appendChild(setup.element)
     </script>
 </body>
 </html>
