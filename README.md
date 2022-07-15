@@ -58,4 +58,16 @@ Read uno.js documentation to undrstand the library quickly. Each page of the doc
 
 ### Developed by Deshan Nawanjana
 
-[DNJS](https://dnjs.info/) | [LinkedIn](https://www.linkedin.com/in/deshan-nawanjana/) | [GitHub](https://github.com/deshan-nawanjana) | [YouTube](https://www.youtube.com/channel/UCfqOF8_UTa6LhaujoFETqlQ) | [Blogger](https://dn-w.blogspot.com/) | [Facebook](https://www.facebook.com/mr.dnjs) | [Gmail](mailto:deshan.uok@gmail.com)
+[DNJS](https://dnjs.info/)
+&ensp;|&ensp;
+[LinkedIn](https://www.linkedin.com/in/deshan-nawanjana/)
+&ensp;|&ensp;
+[GitHub](https://github.com/deshan-nawanjana)
+&ensp;|&ensp;
+[YouTube](https://www.youtube.com/channel/UCfqOF8_UTa6LhaujoFETqlQ)
+&ensp;|&ensp;
+[Blogger](https://dn-w.blogspot.com/)
+&ensp;|&ensp;
+[Facebook](https://www.facebook.com/mr.dnjs)
+&ensp;|&ensp;
+[Gmail](mailto:deshan.uok@gmail.com)
