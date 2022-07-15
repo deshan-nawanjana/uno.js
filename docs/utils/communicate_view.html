@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../index.css">
+    <link rel="stylesheet" href="../assets/libraries/prism.css">
+    <script src="../../dist/uno.min.js"></script>
+</head>
+<body class="center">
+    <div class="page">
+        <h1>Communicate View</h1>
+        <p>
+            Communicate View is an util that associates with Communicator(). This util ir really similar to Serial Monitor in Arduino IDE that you can send and receive serial messages between your microcontroller and computer. This tool does not work with uno.js client since Communicator() supports only for your own Arduino programs that installed in your microcontroller.
+        </p>
+        <div class="example"></div>
+        <p>
+            Using communicate view, you should be able to type a new message and press enter to send it to the microcontroller, also change the baud rate of the communication.
+        </p>
+        <p>
+            You can simply create a Communicator() and connect it with CommunicateView(). Look at the following example.
+        </p>
+<pre><code class="language-js">// create communicator
+const comTool = new UNO.Communicator()
+
+// create communicate view
+const comView = new UNO.CommunicateView(comTool)
+
+// create start button to start the communicator
+const button = new UNO.StartButton(comTool)
+
+// append communicate view to body
+document.body.appendChild(comView.element)
+
+// append start button to body
+document.body.appendChild(button.element)
+</code></pre>
+        <p>
+            As you can see in this example,  you can use the StartButton() not only for Controller(), also for the Communicator(). You can provide init and stop functions to the StartButton() constructor or it will take the default communicator start() and stop() methods.
+        </p>
+<pre><code class="language-js">new UNO.StartButton(comTool, init, stop)</code></pre>
+    </div>
+    <script>
+        const com = new UNO.Communicator()
+        const cmv = new UNO.CommunicateView(com)
+        const btn = new UNO.StartButton(com)
+
+        document.querySelector('.example').appendChild(btn.element)
+        document.querySelector('.example').appendChild(cmv.element)
+    </script>
+    <script src="../assets/libraries/prism.js"></script>
+</body>
+</html>
