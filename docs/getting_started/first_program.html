@@ -66,10 +66,10 @@ const blink = async function() {
     while(true) {
         // turn on led and delay
         await myBoard.digitalWrite(13, HIGH)
-        await myBoard.delay(500)
+        await myBoard.delay(300)
         // turn off led and delay
         await myBoard.digitalWrite(13, LOW)
-        await myBoard.delay(500)
+        await myBoard.delay(200)
     }
 }
 
@@ -88,9 +88,9 @@ window.addEventListener('click', blink)</code></pre>
 
         const loop = async function() {
             await uno.digitalWrite(13, HIGH)
-            await uno.delay(500)
+            await uno.delay(300)
             await uno.digitalWrite(13, LOW)
-            await uno.delay(500)
+            await uno.delay(200)
             await loop()
         }
 
