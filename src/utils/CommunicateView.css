@@ -1,0 +1,106 @@
+.unojs-util-communicate-view {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    background-color: #222;
+    width: calc(100% - 40px);
+    height: 300px;
+    box-shadow: 0px 3px 15px rgba(0,0,0,0.1);
+    max-height: calc(100vh - 40px);
+    overflow-y: hidden;
+    overflow-x: hidden;
+    cursor: default;
+    font-size: 10px;
+    margin: 20px;
+    user-select: none;
+    outline: none;
+    color: #FFF6;
+}
+
+.communicate-view-title {
+    text-align: center;
+    height: 40px;
+    line-height: 40px;
+    color: #FFF6;
+    font-size: 12px;
+    background-color: #1118;
+    text-align: left;
+    padding: 0px 0px 0px 15px;
+}
+
+.communicate-view-tray {
+    height: 220px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.communicate-view-tray::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+}
+
+.communicate-view-tray::-webkit-scrollbar-thumb {
+    background-color: #1111;
+}
+
+.communicate-view-tray:hover::-webkit-scrollbar-thumb {
+    background-color: #FFF5;
+}
+
+.communicate-view-tray > div {
+    white-space: nowrap;
+    line-height: 20px;
+    height: 20px;
+    background-position: left;
+    background-size: auto 100%;
+    background-repeat: no-repeat;
+    padding-left: 20px;
+}
+
+.communicate-view-sent {
+    background-image: url('data:image/svg+xml,<svg version="1.1" viewBox="0 0 24 24" width="200" height="200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="fill: rgb(255, 255, 255); opacity: 1; transform: rotate(0deg) scale(1, 1);"><g><path d="M11.828 12l2.829 2.828-1.414 1.415L9 12l4.243-4.243 1.414 1.415L11.828 12z"></path></g></svg>');
+    color: #FFFA;
+}
+
+.communicate-view-received {
+    background-image: url('data:image/svg+xml,<svg version="1.1" viewBox="0 0 24 24" width="200" height="200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="fill: rgb(255, 255, 255); opacity: 0.7; transform: rotate(0deg) scale(1, 1);"><g><path d="M12.172 12L9.343 9.172l1.414-1.415L15 12l-4.243 4.243-1.414-1.415z"></path></g></svg>');
+    color: #FFF4;
+}
+
+.communicate-view-foot {
+    height: 40px;
+    display: flex;
+    background-color: #1118;
+}
+
+.communicate-view-foot > input {
+    height: 40px;
+    border: none;
+    padding: 0px 10px;
+    margin: 0px 0px;
+    width: 100%;
+    background-color: transparent;
+    color: #FFF9;
+}
+
+.communicate-view-label {
+    width: 120px;
+    text-align: center;
+    line-height: 40px;
+    font-size: 13px;
+}
+
+.communicate-view-foot > select {
+    height: 40px;
+    border: none;
+    padding: 0px 10px;
+    margin: 0px 0px;
+    width: 100px;
+    text-align: right;
+    background-color: transparent;
+    color: #FFF6;
+    font-size: 13px;
+}
+
+.communicate-view-foot > select > option {
+    background-color: #1118;
+    color: #FFF9;
+}
