@@ -1,0 +1,280 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="../docs/assets/images/unojs_icon.png" type="images/png">
+    <script src="../dist/uno.min.js"></script>
+    <style>
+        * {
+            user-select: none;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #000;
+        }
+
+        .sky-box {
+            width: 1000px;
+            height: 650px;
+            border: 1px solid #111;
+            background-color: #FFF;
+            position: fixed;
+            top: calc(50vh - 325px);
+            left: calc(50vw - 500px);
+        }
+
+        .heli {
+            width: 138px;
+            height: 90px;
+            background-image: url(./assets/gif/helicopter.gif);
+            background-position: -10px -53px;
+            background-size: 160px 160px;
+            transform: scaleX(-1);
+            position: relative;
+            top: 280px;
+            left: 100px;
+        }
+
+        .sky-box > canvas {
+            position: absolute;
+            left: 0px;
+            top: 0px;
+        }
+
+        .unojs-util-start-button {
+            position: fixed;
+            z-index: 2;
+            top: 0px;
+            left: 0px;
+        }
+
+        .unojs-util-graph-view {
+            position: fixed;
+            z-index: 2;
+            top: 0px;
+            left: calc(100vw - 340px);
+        }
+
+        .unjs-util-setup-view {
+            position: fixed;
+            z-index: 2;
+            top: calc(100vh - 300px);
+            left: calc(100vw - 340px);
+        }
+    </style>
+    <title>Ultrasonic Sensor Heli Ride</title>
+</head>
+<body>
+    <div class="sky-box">
+        <div class="heli"></div>
+        <canvas width="1000" height="650"></canvas>
+    </div>
+    <script>
+        // array of readings to get a stable value
+        const arr = []
+
+        // create controller
+        const uno = new UNO.Controller()
+        // create ultrasonic sensor
+        const uss = new UNO.UltrasonicSensor(uno, 12, 13)
+        // create graph view
+        const grp = new UNO.GraphView('Ultrasonic Sensor Readings', 1, 0, 1000)
+
+        // init method
+        const init = async function() {
+            // start controller
+            await uno.init()
+            // start sensor
+            await uss.begin()
+            // restart game
+            restart()
+            // start loop
+            loop()
+        }
+
+        // loop method
+        const loop = async function() {
+            // read duration from sensor
+            const dur = await uss.readDuration()
+            // check validity
+            if(dur < 700) {
+                // push to readings array
+                arr.push(dur)
+                // update on graph
+                grp.update({ 'H' : dur })
+                // remove overflow old readings
+                if(arr.length > 50) { arr.shift() }
+            }
+            // next round of loop
+            loop()
+        }
+
+        // stop method
+        const stop = async function() {
+            // stop controller
+            await uno.stop()
+        }
+
+        // create start button
+        const btn = new UNO.StartButton(uno, init, stop)
+
+        // append button and graph
+        document.body.appendChild(btn.element)
+        document.body.appendChild(grp.element)
+
+        // create setup view
+        const setup = new UNO.SetupView({
+            'ARD' : 'Arduino Board',
+            'USS' : 'Ultrasonic Sensor'
+        }, [
+            'USS(VCC) = 5V',
+            'USS(TRG) = PIN(12)',
+            'USS(ECH) = PIN(13)',
+            'USS(GND) = GND'
+        ])
+
+        // append setup view
+        document.body.appendChild(setup.element)
+
+        // average method to get stable reading
+        const avg = () => {
+            // init total
+            let tot = 0
+            // calculate total from each reading
+            for(let i = 0; i < arr.length; i++) { tot += arr[i] }
+            // return average
+            return tot / arr.length
+        }
+
+        // define heli element
+        const heli = document.querySelector('.heli')
+        // define canvas and context
+        const canvas = document.querySelector('canvas')
+        const context = canvas.getContext('2d')
+        // set fill color for walls
+        context.fillStyle = '#111A'
+        // get canvas dimensions
+        const width = canvas.width
+        const height = canvas.height
+
+        // difficulty level
+        let dif = 300
+        // chrashed mode
+        let out = true
+        // array of walls coordinates
+        let walls = []
+
+        // get max wall x method
+        const maxWallX = () => {
+            // init max
+            let max = walls[0].x
+            // find which wall has the maximum x value
+            for(let i = 0; i < walls.length; i++) {
+                if(walls[i].x > max) { max =  walls[i].x}
+            }
+            // return max
+            return max
+        }
+
+        // move wall method
+        const moveWalls = () => {
+            // for each wall
+            for(let i = 0; i < walls.length; i++) {
+                // current wall
+                const wall = walls[i]
+                // get closer to left side
+                wall.x -= 1
+                // if wall is passed the canvas
+                if(wall.x < -50) {
+                    // place next to max wall
+                    wall.x = 300 + maxWallX()
+                    // get random y offset
+                    wall.y = dif - Math.floor(Math.random() * dif * 2)
+                    // increase difficulty until 300
+                    if(dif < 300) { dif += 10 }
+                }
+            }
+        }
+
+        // draw walls method
+        const drawWalls = () => {
+            // clear context
+            context.clearRect(0, 0, width, height)
+            // for each wall
+            for(let i = 0; i < walls.length; i++) {
+                // current wall
+                const wall = walls[i]
+                // draw upper wall
+                context.fillRect(wall.x, 0, 50, height / 2 + wall.y - 100)
+                // draw upper lower
+                context.fillRect(wall.x, height / 2 + wall.y + 100, 50, height)
+            }
+        }
+
+        // check crash method
+        const checkCrash = () => {
+            // get heli position
+            let heliY = parseInt(heli.style.top) + 45 - 325
+            // get wall that paralleled with heli
+            const wall = walls.find(k => k.x > 50 && k.x < 228)
+            // if any wall at the movment
+            if(wall) {
+                // get heli position and wall offset difference
+                if(Math.abs(heliY - wall.y) > 60) {
+                    // reset if crached
+                    restart()
+                    return
+                }
+            }
+        }
+
+        // render method
+        const render = () => {
+            // if not in crashed mode
+            if(out === false) {
+                // update heli position from sensor readings
+                heli.style.top = 700 - avg() + 'px'
+                // move walls to left
+                moveWalls()
+                // draw on canvas
+                drawWalls()
+                // check if crashed
+                checkCrash()
+            }
+            // request next frame
+            requestAnimationFrame(render)
+        }
+
+        // restart method
+        const restart = () => {
+            // turn on crashed mode
+            out = true
+            // blink heli by timeout
+            for(let i = 1; i < 9; i++) {
+                setTimeout(() => {
+                    heli.style.display = i % 2 ? 'none' : 'block'
+                }, i * 120)
+            }
+            // set new walls coords
+            setTimeout(() => {
+                walls = [
+                    { x : 1000, y : 0 },
+                    { x : 1300, y : 60 },
+                    { x : 1600, y : -30 },
+                    { x : 1900, y : 20 },
+                    { x : 2200, y : 40 },
+                    { x : 2500, y : 0 }
+                ]
+                // turn off crashed mode
+                out = false
+            }, 1080)
+        }
+
+        // start render
+        render()
+    </script>
+</body>
+</html>
