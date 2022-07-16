@@ -1,14 +1,169 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="./docs/assets/images/unojs_icon.png" type="images/png">
+    <link rel="preload" href="./docs/assets/fonts/Inter-Regular.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="./index.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="./dist/uno.min.js"></script>
-    <title>uno.js</title>
+    <title>uno.js - JavaScript Library for Arduino</title>
 </head>
 <body>
-    <script src="./examples/blink_led.js"></script>
+    <div class="cover">
+        <div class="cover-title">uno.js</div>
+        <div class="cover-text">JavaScript Library for Arduino</div>
+    </div>
+
+    <div class="ribbon-outer">
+        <div class="ribbon">
+            <div class="ribbon-item" onclick="clickEvent(0)">Home</div>
+            <div class="ribbon-item" onclick="clickEvent(1)">Download</div>
+            <div class="ribbon-item" onclick="clickEvent(2)">Docs</div>
+            <div class="ribbon-item" onclick="clickEvent(3)">GitHub</div>
+            <div class="ribbon-item" onclick="clickEvent(4)">About</div>
+        </div>
+    </div>
+
+    <div class="step-head">Let's Blink an LED</div>
+
+    <div class="step-box">
+        <div class="step">
+            <div class="step-title">Step 1</div>
+            <div class="step-text">
+                <li>Connect your Arduino board to computer via USB.</li>
+                <li>Make sure your browser supports Web Serial API.</li>
+                <li>Read the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Navigator/serial#browser_compatibility" target="_blank">browser compatibility</a> in MDN Docs.</li>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-title">Step 2</div>
+            <div class="step-text">
+                <li>Select the board and press upload uno.js client.</li>
+                <li>And select the serial port in the prompt.</li>
+            </div>
+            <div class="step-button step-button-upload"></div>
+        </div>
+        <div class="step">
+            <div class="step-title">Step 3</div>
+            <div class="step-text">
+                <li>Connect an LED between PIN 13 and GND or look at the built in LED.</li>
+                <li>Press start button to blink.</li>
+            </div>
+            <div class="step-button step-button-start"></div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="about">
+            <div class="about-title">What is uno.js?</div>
+            <div class="about-text">
+                Integrate Arduino technology into JavaScript is the main concept of uno.js. This library communicate with the microcontroller that has connected to your PC and reads values from sensors and modules to do any kind of calculation in web environment. Look at the following advantages you will experiance using uno.js Library.
+            </div>
+            <div class="about-text">
+                <li>Combine both JavaScript and Arduino technologies together</li>
+                <li>No need of installing programs to microcontroller again and again</li>
+                <li>Run or test programs, locally or hosted in anywhere in the internet</li>
+                <li>Develop larger programs without worring about the storage</li>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer example">
+        <div class="about">
+            <div class="about-title">Check out some examples</div>
+            <div class="about-text">
+                You can experiance some of uno.js sample projects here. Make sure you have installed the uno.js client in your Arduino board first.
+            </div>
+            <div class="about-list">
+                <div class="example-item globe" onclick="exampleEvent(0)">
+                    Accelerometer Globe
+                </div>
+                <div class="example-item snake" onclick="exampleEvent(1)">
+                    Joystick Snake Game
+                </div>
+                <div class="example-item heli" onclick="exampleEvent(2)">
+                    Ultrasonic Sensor Heli Ride
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="auth">
+        <div class="auth-title">Developed by Deshan Nawanjana</div>
+        <div class="auth-links">
+            <a target="_blank" href="https://dnjs.info/">DNJS</a> |
+            <a target="_blank" href="https://github.com/deshan-nawanjana">GitHub</a> |
+            <a target="_blank" href="https://www.facebook.com/mr.dnjs">Facebook</a> |
+            <a target="_blank" href="https://www.linkedin.com/in/deshan-nawanjana/">LinkedIn</a> |
+            <a target="_blank" href="https://www.youtube.com/channel/UCfqOF8_UTa6LhaujoFETqlQ">YouTube</a> |
+            <a target="_blank" href="https://dn-w.blogspot.com/">Blogger</a> |
+            <a target="_blank" href="mailto:deshan.uok@gmail.com">Gmail</a>
+        </div>
+    </div>
+
+    <script>
+        const dir = './dist/client_hex/arduino_'
+        const upd = new UNO.UploadButton(
+            new UNO.Uploader(), {
+                'Arduino Uno'  : { board : 'uno',  file : dir + 'uno.hex' },
+                'Arduino Mega' : { board : 'mega', file : dir + 'mega.hex' },
+                'Arduino Nano' : { board : 'nano', file : dir + 'nano.hex' }
+            }
+        )
+
+        document.querySelector('.step-button-upload').appendChild(upd.element)
+
+        const uno = new UNO.Controller()
+
+        const init = async function() {
+            await uno.init()
+            await uno.pinMode(13, OUTPUT)
+            await loop()
+        }
+
+        const loop = async function() {
+            await uno.digitalWrite(13, HIGH)
+            await uno.delay(300)
+            await uno.digitalWrite(13, LOW)
+            await uno.delay(200)
+            await loop()
+        }
+
+        const stop = async function() {
+            await uno.stop()
+        }
+
+        const btn = new UNO.StartButton(uno, init, stop)
+
+        document.querySelector('.step-button-start').appendChild(btn.element)
+
+        const clickEvent = index => {
+            if(index === 0) {
+                location.reload()
+            } else if(index === 1) {
+                const a = document.createElement('a')
+                a.href = './dist/uno.min.js'
+                a.download = 'uno.min.js'
+                a.click()
+            } else if(index === 2) {
+                window.open('docs/')
+            } else if(index === 3) {
+                window.open('https://github.com/deshan-nawanjana/uno.js')
+            } else if(index === 4) {
+                window.open('https://dnjs.info/')
+            }
+        }
+
+        const exampleEvent = index => {
+            if(index === 0) {
+                window.open('./examples/accelerometer_globe.html')
+            } else if(index === 1) {
+                window.open('./examples/joystick_snake_game.html')
+            } else if(index === 2) {
+                window.open('./examples/ultrasonic_sensor_heli_ride.html')
+            }
+        }
+    </script>
 </body>
 </html>
